@@ -9,4 +9,5 @@ class TestHelloWorld(unittest.TestCase):
         jvpm.HelloWorld.HelloWorld()
         sys.stdout.assert_has_calls(
             [call.write('Hello world'), call.write('\n')]
+            [call.write('Emily Berger'), call.write('\n')]
         )
