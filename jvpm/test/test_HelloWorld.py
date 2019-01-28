@@ -15,6 +15,6 @@ class TestHelloWorld(unittest.TestCase):
             call.write('Eric Dao'), call.write('\n'),
             call.write('Michael DeVries'), call.write('\n'),
 	    call.write('Saad Baig'), call.write('\n'),
-            call.write('James Bierschwale'), call.write('\n')
+            call.write('James Bierschwale'), call.write('\n'),
 	    call.write('Josh Brown'), call.write('\n')]
         )
