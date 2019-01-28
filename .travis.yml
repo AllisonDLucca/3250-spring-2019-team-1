@@ -2,4 +2,4 @@ language: python
 python:
   - "3.6"
 script:
-  - python jvpm/test/test_HelloWorld.py
+  - python3 -m unittest
