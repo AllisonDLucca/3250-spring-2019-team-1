@@ -6,7 +6,8 @@ from jvpm.ClassFile import OpCodes
 class TestClassFile(unittest.TestCase):
     def setUp(self):
         m = mock_open(read_data=b'\xCA\xFE\xBA\xBE\x00\x01\x02\x03\x03\x04')
-        with patch(__name__ + '.open', m):
+        #_with patch(__name__ + '.open', m):
+        with patch('builtins.open', m):
             self.cf = ClassFile()
 
     def test_magic(self):

@@ -1,5 +1,3 @@
-
-
 class ClassFile():
     def __init__(self):
         with open('test.class', 'rb') as binary_file:
@@ -30,3 +28,9 @@ class OpCodes():
     def interpret(self, value):
         return self.table[value]()
 
+if '__main__' == __name__:
+    java = ClassFile() #pragma: no cover
+    print('magic: ', java.get_magic()) #pragma: no cover
+    print('minor_version: ', java.get_minor()) #pragma: no cover
+    print('major_version: ', java.get_major()) #pragma: no cover
+    print('constant_pool_count: ', java.get_constant_pool_count()) #pragma: no cover
