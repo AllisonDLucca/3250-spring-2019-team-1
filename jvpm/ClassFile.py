@@ -17,6 +17,9 @@ class ClassFile():
     def get_major(self):
         return self.data[6] + self.data[7]
 
+    def get_constant_pool_count(self):
+        return self.data[8] + self.data[9]
+
 class OpCodes():
     def __init__(self):
         self.table = {0x00: self.not_implemented}

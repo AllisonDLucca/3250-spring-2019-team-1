@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import mock_open, patch
-from ClassFile import ClassFile
-from ClassFile import OpCodes
+from jvpm.ClassFile import ClassFile
+from jvpm.ClassFile import OpCodes
 
 class TestClassFile(unittest.TestCase):
     def setUp(self):
-        m = mock_open(read_data=b'\xCA\xFE\xBA\xBE\x00\x01\x02\x03')
+        m = mock_open(read_data=b'\xCA\xFE\xBA\xBE\x00\x01\x02\x03\x03\x04')
         with patch(__name__ + '.open', m):
             self.cf = ClassFile()
 
@@ -17,6 +17,9 @@ class TestClassFile(unittest.TestCase):
 
     def test_major(self):
         self.assertEqual(self.cf.get_major(), 5)
+
+    def test_constant_pool_count(self):
+        self.assertEqual(self.cf.get_constant_pool_count(), 7)
 
 class TestOpCodes(unittest.TestCase):
     def test_not_implmented(self):
