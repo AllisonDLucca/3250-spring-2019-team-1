@@ -1,12 +1,22 @@
 language: python
 python:
+  - "3.4"
+  - "3.5"
   - "3.6"
+  - "3.7"
+  
+addons:
+  sonarcloud:
+    organization: "allisondlucca-github"
+    token:
+      secure: "e2037251abb7c028fdc41d551835731ac1e7f49"
 
 install:
   - pip install codecov
 
 script:
   - coverage run --omit=*test* -m unittest
+  -sonar -scanner
 
 after_success:
   - codecov
