@@ -16,7 +16,7 @@ install:
 
 script:
   - coverage run --omit=*test* -m unittest
-  -sonar -scanner
+  - sonar-scanner
 
 after_success:
   - codecov
