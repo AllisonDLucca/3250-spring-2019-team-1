@@ -9,7 +9,8 @@ python:
 addons:
   sonarcloud:
     organization: "allisondlucca-github"
-    token: SONAR_TOKEN
+    token: 
+      secure: ${SONAR_TOKEN}
 
 install:
   - pip install codecov
