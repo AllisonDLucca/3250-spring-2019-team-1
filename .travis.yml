@@ -16,7 +16,7 @@ install:
 
 script:
   - coverage run --omit=*test* -m unittest
-  - coverage xml 
+  - coverage xml -i
   - sonar-scanner
 
 after_success:
