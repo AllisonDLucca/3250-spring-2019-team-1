@@ -64,7 +64,6 @@ class ClassFile():
                 index_offset += 1
             print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
-<<<<<<< HEAD
         self.cpoolsize = index_offset - 10
         return index_offset - 10
 
@@ -100,26 +99,6 @@ class ClassFile():
     
     def get_field_size(self):
         return self.get_field_count()*2
-=======
-        print(index_offset)
-        return index_offset
-
-    def get_flags(self):
-        offset = self.get_constant_pool_size()
-        return self.data[offset] + self.data[offset+1]
-
-    def get_this_class(self):
-        offset = self.get_constant_pool_size()
-        return self.data[offset+2] + self.data[offset+3]
-
-    def get_super_class(self):
-        offset = self.get_constant_pool_size()
-        return self.data[offset+4] + self.data[offset+5]
-
-    def get_interface_count(self):
-        offset = self.get_constant_pool_size()
-        return self.data[offset+6] + self.data[offset+7]
->>>>>>> c51701562bc583dd7b156e9029b45450fffcb387
 
     def get_method_count(self):
         return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
