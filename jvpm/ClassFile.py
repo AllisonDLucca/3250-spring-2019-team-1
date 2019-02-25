@@ -44,35 +44,34 @@ class ClassFile():
         max = int(self.get_constant_pool_count()) - 1
         for i in range (0,max):
             thing = ConstantInfo()
-            thing.tag = self.data[i + index_offset]
+            thing.tag = self.data[index_offset]
             index_offset += 1
             if thing.tag == 1:
-                bytesNeeded = self.data[i + index_offset] + self.data[i + index_offset + 1]
+                bytesNeeded = self.data[index_offset] + self.data[index_offset + 1]
                 index_offset += 2
             else:
                 bytesNeeded = switch.get(thing.tag)
             for x in range (0,bytesNeeded):
-                thing.info.append(self.data[i + index_offset])
+                thing.info.append(self.data[x + index_offset])
                 index_offset += 1
             self.c_pool_table.append(thing)
-            index_offset -= 1
         print(index_offset)
         return index_offset
 
     def get_flags(self):
-        offset = self.get_constant_pool_count()
+        offset = self.get_constant_pool_size()
         return self.data[offset] + self.data[offset+1]
 
     def get_this_class(self):
-        offset = self.get_constant_pool_count()
+        offset = self.get_constant_pool_size()
         return self.data[offset+2] + self.data[offset+3]
 
     def get_super_class(self):
-        offset = self.get_constant_pool_count()
+        offset = self.get_constant_pool_size()
         return self.data[offset+4] + self.data[offset+5]
 
     def get_interface_count(self):
-        offset = self.get_constant_pool_count()
+        offset = self.get_constant_pool_size()
         return self.data[offset+6] + self.data[offset+7]
 
 
