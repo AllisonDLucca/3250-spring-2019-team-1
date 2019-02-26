@@ -20,6 +20,7 @@ class ClassFile():
 
 class OpCodes():
     def __init__(self):
+        self.op_stack = []  # operand stack for the opcodes
         self.table = {0x00: self.not_implemented}
 
     def not_implemented(self):
