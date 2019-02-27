@@ -21,7 +21,7 @@ class ClassFile():
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
-        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1}
+        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1, 0x05: self.iconst_2, 0x06: self.iconst_3(), 0x07: self.iconst_4(), 0x08: self.iconst_5()}
 
     def not_implemented(self):
         return 'not implemented'
@@ -32,7 +32,23 @@ class OpCodes():
     def iconst_m1(self):
         self.op_stack.append(-1)
 
+    def iconst_0(self):
+        self.op_stack.append(0)
 
+    def iconst_1(self):
+        self.op_stack.append(1)
+
+    def iconst_2(self):
+        self.op_stack.append(2)
+
+    def iconst_3(self):
+        self.op_stack.append(3)
+
+    def iconst_4(self):
+        self.op_stack.append(4)
+
+    def iconst_5(self):
+        self.op_stack.append(5)
 
 
 if '__main__' == __name__:
