@@ -21,13 +21,19 @@ class ClassFile():
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
-        self.table = {0x00: self.not_implemented}
+        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1}
 
     def not_implemented(self):
         return 'not implemented'
 
     def interpret(self, value):
         return self.table[value]()
+
+    def iconst_m1(self):
+        self.op_stack.append(-1)
+
+
+
 
 if '__main__' == __name__:
     java = ClassFile() #pragma: no cover

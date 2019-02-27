@@ -27,3 +27,5 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(OpCodes().interpret(0), 'not implemented')
         with self.assertRaises(KeyError):
             OpCodes().interpret(1)
+
+    def test_iconst_m1(self):
