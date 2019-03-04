@@ -23,41 +23,79 @@ class TestClassFile(unittest.TestCase):
         self.assertEqual(self.cf.get_constant_pool_count(), 7)
 
 class TestOpCodes(unittest.TestCase):
-    def setUp(self):
-        self.test_stack = []
-        m = self.test_stack
-        with patch('OpCodes.op_stack', m):
-            self.op = OpCodes()
 
     def test_not_implmented(self):
-        self.assertEqual(self.op.interpret(0), 'not implemented')
+        self.assertEqual(OpCodes().interpret(0), 'not implemented')
         with self.assertRaises(KeyError):
-            self.op.interpret(1)
+            OpCodes().interpret(1)
 
     def test_iconst_m1(self):
-        self.op.interpret(0x02)
-        self.assertEqual(-1, self.test_stack.pop())
+        m = OpCodes()
+        m.interpret(0x02)
+        self.assertEqual(-1, m.op_stack.pop())
 
-    #def test_iconst_0(self):
-    #    OpCodes().interpret(0x03)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 0)
+    def test_iconst_0(self):
+        m = OpCodes()
+        m.interpret(0x03)
+        self.assertEqual(m.op_stack.pop(), 0)
 
-    #def test_iconst_1(self):
-    #    OpCodes().interpret(0x04)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 1)
+    def test_iconst_1(self):
+        m = OpCodes()
+        m.interpret(0x04)
+        self.assertEqual(m.op_stack.pop(), 1)
 
-    #def test_iconst_2(self):
-    #    OpCodes().interpret(0x05)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 2)
+    def test_iconst_2(self):
+        m = OpCodes()
+        m.interpret(0x05)
+        self.assertEqual(m.op_stack.pop(), 2)
 
-    #def test_iconst_3(self):
-    #    OpCodes().interpret(0x06)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 3)
+    def test_iconst_3(self):
+        m = OpCodes()
+        m.interpret(0x06)
+        self.assertEqual(m.op_stack.pop(), 3)
 
-    #def test_iconst_4(self):
-    #    OpCodes().interpret(0x07)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 4)
+    def test_iconst_4(self):
+        m = OpCodes()
+        m.interpret(0x07)
+        self.assertEqual(m.op_stack.pop(), 4)
 
-    #def test_iconst_5(self):
-    #    OpCodes().interpret(0x08)
-    #    self.assertEqual(OpCodes().op_stack.pop(), 5)
+    def test_iconst_5(self):
+        m = OpCodes()
+        m.interpret(0x08)
+        self.assertEqual(m.op_stack.pop(), 5)
+
+    def test_iadd(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.op_stack.append(2)
+        m.interpret(0x06)
+        self.assertEqual(m.op_stack.pop(), 3)
+
+    def test_iand(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.op_stack.append(3)
+        m.interpret(0x7e)
+        self.assertEqual(m.op_stack.pop(), 1)
+
+    def test_idiv(self):
+        m = OpCodes()
+        m.op_stack.append(6)
+        m.op_stack.append(3)
+        m.interpret(0x6c)
+        self.assertEqual(m.op_stack.pop(), 2)
+
+    def test_imul(self):
+        m = OpCodes()
+        m.op_stack.append(3)
+        m.op_stack.append(2)
+        m.interpret(0x68)
+        self.assertEqual(m.op_stack.pop(), 6)
+
+    def test_ineg(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.interpret(0x74)
+        self.assertEqual(m.op_stack.pop(), -1)
+
+
