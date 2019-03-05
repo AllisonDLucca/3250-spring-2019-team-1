@@ -98,4 +98,43 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x74)
         self.assertEqual(m.op_stack.pop(), -1)
 
+    def test_ior(self):
+        m.op_stack.append(1)
+        m.op_stack.append(2)
+        m.interpret(0x80)
+        self.assertEqual(m,op_stack.pop)), 4)
 
+    def test_irem(self):
+        m.op_stack.append(2)
+        m.op_stack.append(2)
+        m.interpret(0x70)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_ishl(self):
+        m.op_stack.append(4)
+        m.op_stack.append(3)
+        m.interpret(0x78)
+        self.assertEqual(m,op_stack.pop(), 32)
+
+    def test_ishr(self):
+        m.op_stack.append(4)
+        m.op_stack.append(3)
+        m.interpret(0x7a)
+        self.assertEqual(m,op_stack.pop(), 0)     
+
+    def test_isub(self):
+        m.op_stack.append(2)
+        m.op_stack.append(1)
+        m.interpret(0x64)
+        self.assertEqual(m,op_stack.pop(), 1)
+
+    def test_iushr(self):
+        m.op_stack.append(4)
+        m.interpret(0x7c)
+        self.assertEqual(m,op_stack.pop, 8)
+    
+    def test_ixor(self):
+        m.op_stack.append(4)
+        m.op_stack.append(4)
+        m.interpret(0x82)
+        self.assertEqual(m,op_stack.pop(), 8)
