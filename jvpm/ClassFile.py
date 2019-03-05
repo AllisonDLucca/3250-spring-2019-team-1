@@ -69,16 +69,22 @@ class OpCodes():
         self.op_stack.append(self.op_stack.pop() * -1)
 
     def ior(self):
-        self.op_stack.append(self.op_stack.pop())  |= self.op_stack.pop())
+        self.op_stack.append(self.op_stack.pop() | self.op_stack.pop())
 
     def irem(self):
-        self.op_stack.append(self.op_stack.pop()) % self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 % value2)
     
     def ishl(self):
-        self.op_stack.append(self.op_stack.pop()) << self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 << value2)
 
-    def ishr(self):  
-        self.op_stack.append(self.op_stack.pop()) >> self.op_stack.pop())
+    def ishr(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 >> value2)
 
     def isub(self):
         value2 = self.op_stack.pop()
@@ -86,10 +92,16 @@ class OpCodes():
         self.op_stack.append(value1 - value2)
     
     def iushr(self):
-        self.op_stack.append(self.op_stack.pop()) * 2)
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        s = value2 & 0x1f
+        if value1 >= 0:
+            self.op_stack.append(value1 >> s)
+        else:
+            self.op_stack.append((value1+0x100000000) >> s)
 
     def ixor(self):
-        self.op_stack.append(self.op_stack.pop()) ^ self.op_stack.pop())
+        self.op_stack.append(self.op_stack.pop() ^ self.op_stack.pop())
 
     
 

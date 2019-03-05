@@ -99,42 +99,54 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m.op_stack.pop(), -1)
 
     def test_ior(self):
+        m = OpCodes()
         m.op_stack.append(1)
         m.op_stack.append(2)
         m.interpret(0x80)
-        self.assertEqual(m,op_stack.pop)), 4)
+        self.assertEqual(m.op_stack.pop(), 3)
 
     def test_irem(self):
-        m.op_stack.append(2)
-        m.op_stack.append(2)
+        m = OpCodes()
+        m.op_stack.append(7)
+        m.op_stack.append(3)
         m.interpret(0x70)
-        self.assertEqual(m.op_stack.pop(), 0)
+        self.assertEqual(m.op_stack.pop(), 1)
 
     def test_ishl(self):
+        m = OpCodes()
         m.op_stack.append(4)
         m.op_stack.append(3)
         m.interpret(0x78)
-        self.assertEqual(m,op_stack.pop(), 32)
+        self.assertEqual(m.op_stack.pop(), 32)
 
     def test_ishr(self):
+        m = OpCodes()
         m.op_stack.append(4)
-        m.op_stack.append(3)
+        m.op_stack.append(2)
         m.interpret(0x7a)
-        self.assertEqual(m,op_stack.pop(), 0)     
+        self.assertEqual(m.op_stack.pop(), 1)
 
     def test_isub(self):
+        m = OpCodes()
         m.op_stack.append(2)
         m.op_stack.append(1)
         m.interpret(0x64)
-        self.assertEqual(m,op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 1)
 
     def test_iushr(self):
-        m.op_stack.append(4)
+        m = OpCodes()
+        m.op_stack.append(23)       #Testing for positive logical shift right
+        m.op_stack.append(1)
         m.interpret(0x7c)
-        self.assertEqual(m,op_stack.pop, 8)
+        self.assertEqual(m.op_stack.pop(), 11)
+        m.op_stack.append(-5)       #Testing for negative logical shift right
+        m.op_stack.append(3)
+        m.interpret(0x7c)
+        self.assertEquals(m.op_stack.pop(), 536870911)
     
     def test_ixor(self):
+        m = OpCodes()
         m.op_stack.append(4)
         m.op_stack.append(4)
         m.interpret(0x82)
-        self.assertEqual(m,op_stack.pop(), 8)
+        self.assertEqual(m.op_stack.pop(), 0)
