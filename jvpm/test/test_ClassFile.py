@@ -68,7 +68,7 @@ class TestOpCodes(unittest.TestCase):
         m = OpCodes()
         m.op_stack.append(1)
         m.op_stack.append(2)
-        m.interpret(0x06)
+        m.interpret(0x60)
         self.assertEqual(m.op_stack.pop(), 3)
 
     def test_iand(self):
