@@ -142,7 +142,7 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(-5)       #Testing for negative logical shift right
         m.op_stack.append(3)
         m.interpret(0x7c)
-        self.assertEquals(m.op_stack.pop(), 536870911)
+        self.assertEqual(m.op_stack.pop(), 536870911)
     
     def test_ixor(self):
         m = OpCodes()
