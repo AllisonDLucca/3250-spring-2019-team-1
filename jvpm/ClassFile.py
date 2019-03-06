@@ -52,10 +52,14 @@ class OpCodes():
         self.op_stack.append(5)
 
     def iadd(self):
-        self.op_stack.append(self.op_stack.pop() + self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 + value2)
 
     def iand(self):
-        self.op_stack.append(self.op_stack.pop() & self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 & value2)
 
     def idiv(self):
         value2 = self.op_stack.pop()
@@ -63,13 +67,17 @@ class OpCodes():
         self.op_stack.append(value1//value2)
 
     def imul(self):
-        self.op_stack.append(self.op_stack.pop() * self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 * value2)
 
     def ineg(self):
         self.op_stack.append(self.op_stack.pop() * -1)
 
     def ior(self):
-        self.op_stack.append(self.op_stack.pop() | self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 | value2)
 
     def irem(self):
         value2 = self.op_stack.pop()
@@ -101,7 +109,9 @@ class OpCodes():
             self.op_stack.append((value1+0x100000000) >> s)
 
     def ixor(self):
-        self.op_stack.append(self.op_stack.pop() ^ self.op_stack.pop())
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 ^ value2)
 
     
 
