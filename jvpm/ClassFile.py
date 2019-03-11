@@ -10,7 +10,7 @@ class methodInfo():
 
 class ClassFile():
     def __init__(self):
-        with open('test.class', 'rb') as binary_file:
+        with open('Add.class', 'rb') as binary_file:
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
@@ -91,7 +91,7 @@ class ClassFile():
         self.interface_table = itable 
 
     def get_field_count(self):
-        return self.data[18+self.get_constant_pool_size()+self.get_interface_count()]
+        return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
 
     def create_field_table(self):
         '''dont wanna do'''
@@ -105,8 +105,17 @@ class ClassFile():
 
     def create_method_table(self):
         mtable = methodInfo()
+        count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_method_count()):
-            print("I have no clue")
+            print(self.data[count] + self.data[1+count])
+            print(self.data[2+count] + self.data[3 + count])
+            print(self.data[4+count] + self.data[5 + count])
+            print(self.data[6+count] + self.data[7 + count])
+            print(self.data[8 + count] + self.data[9 + count])  #code attribute
+            print(self.data[10 + count] + self.data[11 + count] + self.data[12 + count] + self.data[13 + count])
+            print(self.data[14 + count] + self.data[15 + count])
+            print(self.data[16 + count] + self.data[17 + count])
+            print(self.data[18 + count] + self.data[19 + count] + self.data[20 + count] + self.data[21 + count])
     
 
 
@@ -127,4 +136,6 @@ if '__main__' == __name__:
     print('major_version: ', java.get_major()) #pragma: no cover
     print('constant_pool_count: ', java.get_constant_pool_count()) #pragma: no cover
     print('interface count: ', java.get_interface_count())
+    print('field count: ', java.get_field_count())
     print('method count: ', java.get_method_count())
+    java.create_method_table()
