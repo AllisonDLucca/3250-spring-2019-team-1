@@ -4,9 +4,20 @@ class ConstantInfo():
         self.info = []
         self.name_index = 0
 
-class methodInfo():
+class MethodInfo():
     def __init__(self):
-        self.value = 0
+        self.access_flags = 0
+        self.name_index = 0
+        self.descriptor_index = 0
+
+class CodeAttribute():
+    def __init__(self):
+        self.attribute_name_index = 0
+        self.attribute_length = 0
+        self.max_stack = 0
+        self.max_locals = 0
+        self.code_length = 0
+        self.code = []
 
 class ClassFile():
     def __init__(self):
@@ -15,7 +26,8 @@ class ClassFile():
         self.c_pool_table = []
         self.cpoolsize = 0
         self.interface_table = []
-        self.method_table= []
+        self.method_table = []
+        self.attribute_table = []
 
     def get_magic(self):
         magic = ""
@@ -104,18 +116,32 @@ class ClassFile():
         return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
 
     def create_method_table(self):
-        mtable = methodInfo()
         count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_method_count()):
-            print(self.data[count] + self.data[1+count])
-            print(self.data[2+count] + self.data[3 + count])
-            print(self.data[4+count] + self.data[5 + count])
-            print(self.data[6+count] + self.data[7 + count])
-            print(self.data[8 + count] + self.data[9 + count])  #code attribute
-            print(self.data[10 + count] + self.data[11 + count] + self.data[12 + count] + self.data[13 + count])
-            print(self.data[14 + count] + self.data[15 + count])
-            print(self.data[16 + count] + self.data[17 + count])
-            print(self.data[18 + count] + self.data[19 + count] + self.data[20 + count] + self.data[21 + count])
+            mtable = MethodInfo()
+            mtable.access_flags = self.data[count] + self.data[1+count]
+            mtable.name_index = self.data[2+count] + self.data[3 + count]
+            mtable.descriptor_index = self.data[4+count] + self.data[5 + count]
+            self.method_table.append(mtable)
+
+    def get_attribute_count(self):
+        count = 22 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
+        return self.data[6+count] + self.data[7 + count]
+
+    def create_attribute_table(self):
+        count = 22 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
+        for i in range(0, self.get_attribute_count()):
+            codeAtt = CodeAttribute()
+            codeAtt.attribute_name_index = self.data[8 + count] + self.data[9 + count]
+            codeAtt.attribute_length = self.data[10 + count] + self.data[11 + count] + self.data[12 + count] + self.data[13 + count]
+            codeAtt.max_stack = self.data[14 + count] + self.data[15 + count]
+            codeAtt.max_locals = self.data[16 + count] + self.data[17 + count]
+            codeAtt.code_length = self.data[18 + count] + self.data[19 + count] + self.data[20 + count] + self.data[21 + count]
+            count = count + 21
+            for i in range(0, codeAtt.code_length):
+                codeAtt.code.append(self.data[count + 1])
+                count += 1
+            self.attribute_table.append(codeAtt)
     
 
 
@@ -139,3 +165,8 @@ if '__main__' == __name__:
     print('field count: ', java.get_field_count())
     print('method count: ', java.get_method_count())
     java.create_method_table()
+    print('attribute count: ', java.get_attribute_count())
+    java.create_attribute_table()
+    ops = OpCodes()
+    for i in range(0, len(java.attribute_table[0].code) - 1):
+        ops.interpret(java.attribute_table[0].code[i])
