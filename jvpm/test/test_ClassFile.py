@@ -150,3 +150,10 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(4)
         m.interpret(0x82)
         self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_iload_0(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.interpret(0x1a)
+        self.assertEqual(m.op_stack.pop(), 0)
+
