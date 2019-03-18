@@ -25,7 +25,7 @@ class OpCodes():
         self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1, 0x05: self.iconst_2, 0x06: self.iconst_3, 
         0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
         0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr, 0x82: self.ixor, 0x1a: self.iload_0, 0x1b: self.iload_1,
-        0x1c: self.iload_2, 0x1d: self.iload_3}
+        0x1c: self.iload_2, 0x1d: self.iload_3, 0x3b: self.istore_0}
 
     def not_implemented(self):
         return 'not implemented'
@@ -127,6 +127,12 @@ class OpCodes():
 
     def iload_3(self):
         self.op_stack.append(self.lva[3])
+
+    def istore_0(self):
+        if len(self.lva) == 0:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[0] = self.op_stack.pop()
 
     
 
