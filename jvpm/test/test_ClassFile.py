@@ -190,4 +190,37 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x3b)
         self.assertEqual(m.lva[0], 1)
 
+    def test_istore_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x3c)
+        self.assertEqual(m.lva[1], 1)
+        m.op_stack.append(2)
+        m.interpret(0x3c)
+        self.assertEqual(m.lva[1], 2)
+
+    def test_istore_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.op_stack.append(2)
+        m.interpret(0x3d)
+        self.assertEqual(m.lva[2], 2)
+        m.op_stack.append(3)
+        m.interpret(0x3d)
+        self.assertEqual(m.lva[2], 3)
+
+    def test_istore_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.op_stack.append(3)
+        m.interpret(0x3e)
+        self.assertEqual(m.lva[3], 3)
+        m.op_stack.append(4)
+        m.interpret(0x3e)
+        self.assertEqual(m.lva[3], 4)
+
 
