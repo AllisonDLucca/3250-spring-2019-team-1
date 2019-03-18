@@ -157,3 +157,28 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x1a)
         self.assertEqual(m.op_stack.pop(), 0)
 
+    def test_iload_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x1b)
+        self.assertEqual(m.op_stack.pop(), 1)
+
+    def test_iload_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.interpret(0x1c)
+        self.assertEqual(m.op_stack.pop(), 2)
+
+    def test_iload_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.lva.append(3)
+        m.interpret(0x1d)
+        self.assertEqual(m.op_stack.pop(), 3)
+
+
