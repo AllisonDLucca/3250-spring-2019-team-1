@@ -116,6 +116,12 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(value1 ^ value2)
 
+    def iload(self):
+        # index =
+        self.op_stack.append(self.lva[index])
+        if index >= len(self.lva):
+            raise IndexError
+
     def iload_0(self):
         self.op_stack.append(self.lva[0])
 
@@ -127,6 +133,13 @@ class OpCodes():
 
     def iload_3(self):
         self.op_stack.append(self.lva[3])
+
+    def istore(self):
+        # index =
+        if len(self.lva) <= index:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[index] = self.op_stack.pop()
 
     def istore_0(self):
         if len(self.lva) == 0:
