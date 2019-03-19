@@ -223,4 +223,28 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x3e)
         self.assertEqual(m.lva[3], 4)
 
+    def test_i2b(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.op_stack.append(3)
+        m.interpret(0x91)
+        assert OpCodes().i2b() == isinstance(m.lva[3], bytes)
+
+    def test_i2c(self):
+        assert OpCodes().i2c() == isinstance(value1, chr())
+
+    def test_i2d(self):
+        assert OpCodes().i2d() == isinstance(value1, int)
+
+    def test_i2f(self):
+        assert OpCodes().i2f() == isinstance(value1, float)
+
+    def test_i2l(self):
+        assert OpCodes().i2l() == isinstance(value1, int)
+
+    def test_i2s(self):
+        assert OpCodes().i2s() == isinstance(value1, int)
+
 
