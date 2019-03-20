@@ -254,9 +254,9 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(4)
         m.interpret(0x36, [4])
         self.assertEqual(m.lva[4], 4)
-        m.op_stack.append(4)
+        m.op_stack.append(5)
         m.interpret(0x36, [4])
-        self.assertEqual(m.lva[4], 4)
+        self.assertEqual(m.lva[4], 5)
 
     def test_istore_0(self):
         m = OpCodes()
