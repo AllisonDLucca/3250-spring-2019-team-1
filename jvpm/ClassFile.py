@@ -149,7 +149,16 @@ class ClassFile():
         ops = OpCodes()
         for i in range(0, len(self.attribute_table)):
             for j in range(0, len(self.attribute_table[i].code) - 1):
-                ops.interpret(self.attribute_table[i].code[j])
+                value = self.attribute_table[i].code[j]
+                if value == 36 or value == 15:
+                    j += 1
+                    ops.interpret(value, [self.attribute_table[i].code[j]])
+                elif value == 0xb6:
+                    j += 2
+                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                else:
+                    ops.interpret(value)
+
 
 class OpCodes():
     def __init__(self):
@@ -163,8 +172,13 @@ class OpCodes():
     def not_implemented(self):
         return 'not implemented'
 
-    def interpret(self, value):
-        return self.table[value]()
+    def interpret(self, value, operands = None, constants = None):
+        if operands is not None and constants is not None:
+            return self.table[value](operands, constants)
+        elif operands is not None and constants is None:
+            return self.table[value](operands)
+        else:
+            return self.table[value]()
 
     def iconst_m1(self):
         self.op_stack.append(-1)
