@@ -25,7 +25,7 @@ class ClassFile():
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
-        self.interface_table = []
+        #self.interface_table = []
         self.method_table = []
         self.attribute_table = []
 
@@ -96,18 +96,18 @@ class ClassFile():
     def get_interface_count(self):
         return self.data[self.get_constant_pool_size()+16] + self.data[self.get_constant_pool_size()+17]
 
-    def create_interface(self):
-        itable = [self.get_interface_count()]
-        for i in range[0,len(itable)]:
-            itable[i] = self.data[self.get_constant_pool_size() + 18 + i]
-        self.interface_table = itable 
+    #def create_interface(self):
+    #    itable = [self.get_interface_count()]
+    #    for i in range[0,len(itable)]:
+    #        itable[i] = self.data[self.get_constant_pool_size() + 18 + i]
+    #    self.interface_table = itable
 
     def get_field_count(self):
         return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
 
-    def create_field_table(self):
-        '''dont wanna do'''
-        return 
+    #def create_field_table(self):
+    #    '''dont wanna do'''
+    #    return
     
     def get_field_size(self):
         return self.get_field_count()*2
@@ -123,27 +123,33 @@ class ClassFile():
             mtable.name_index = self.data[2+count] + self.data[3 + count]
             mtable.descriptor_index = self.data[4+count] + self.data[5 + count]
             self.method_table.append(mtable)
+        return self.method_table
 
     def get_attribute_count(self):
-        count = 22 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
-        return self.data[6+count] + self.data[7 + count]
+        count = 28 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
+        return self.data[count] + self.data[1 + count]
 
     def create_attribute_table(self):
-        count = 22 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
+        count = 30 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_attribute_count()):
             codeAtt = CodeAttribute()
-            codeAtt.attribute_name_index = self.data[8 + count] + self.data[9 + count]
-            codeAtt.attribute_length = self.data[10 + count] + self.data[11 + count] + self.data[12 + count] + self.data[13 + count]
-            codeAtt.max_stack = self.data[14 + count] + self.data[15 + count]
-            codeAtt.max_locals = self.data[16 + count] + self.data[17 + count]
-            codeAtt.code_length = self.data[18 + count] + self.data[19 + count] + self.data[20 + count] + self.data[21 + count]
-            count = count + 21
+            codeAtt.attribute_name_index = self.data[count] + self.data[1 + count]
+            codeAtt.attribute_length = self.data[2 + count] + self.data[3 + count] + self.data[4 + count] + self.data[5 + count]
+            codeAtt.max_stack = self.data[6 + count] + self.data[7 + count]
+            codeAtt.max_locals = self.data[8 + count] + self.data[9 + count]
+            codeAtt.code_length = self.data[10 + count] + self.data[11 + count] + self.data[12 + count] + self.data[13 + count]
+            count = count + 13
             for i in range(0, codeAtt.code_length):
                 codeAtt.code.append(self.data[count + 1])
                 count += 1
             self.attribute_table.append(codeAtt)
-    
+        return self.attribute_table
 
+    def run_opcodes(self):
+        ops = OpCodes()
+        for i in range(0, len(self.attribute_table)):
+            for j in range(0, len(self.attribute_table[i].code) - 1):
+                ops.interpret(self.attribute_table[i].code[j])
 
 class OpCodes():
     def __init__(self):
@@ -167,6 +173,4 @@ if '__main__' == __name__:
     java.create_method_table()
     print('attribute count: ', java.get_attribute_count())
     java.create_attribute_table()
-    ops = OpCodes()
-    for i in range(0, len(java.attribute_table[0].code) - 1):
-        ops.interpret(java.attribute_table[0].code[i])
+    java.run_opcodes()
