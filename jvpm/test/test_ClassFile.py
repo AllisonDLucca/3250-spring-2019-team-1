@@ -300,4 +300,41 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x3e)
         self.assertEqual(m.lva[3], 4)
 
+    def test_i2b(self):
+        m = OpCodes()
+        m.op_stack.append(3)
+        m.i2b()
+        assert isinstance(m.op_stack.pop(), int)
+
+    def test_i2c(self):
+        m = OpCodes()
+        m.op_stack.append(69)
+        m.i2c()
+        assert isinstance(m.op_stack.pop(), str)
+
+    def test_i2d(self):
+        m = OpCodes()
+        m.op_stack.append(2)
+        m.i2d()
+        assert isinstance(m.op_stack.pop(), float)
+
+    def test_i2f(self):
+        m = OpCodes()
+        m.op_stack.append(5)
+        m.i2f()
+        assert isinstance(m.op_stack.pop(), float)
+
+    def test_i2l(self):
+        m = OpCodes()
+        m.op_stack.append(8)
+        m.i2l()
+        assert isinstance(m.op_stack.pop(), int)
+
+    def test_i2s(self):
+        m = OpCodes()
+        m.op_stack.append(4)
+        m.i2s()
+        assert isinstance(m.op_stack.pop(), int)
+
+
 

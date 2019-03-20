@@ -173,7 +173,9 @@ class OpCodes():
         self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1, 0x05: self.iconst_2, 0x06: self.iconst_3, 
         0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
         0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
-        0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0, 0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3,}
+        0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0, 0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d, 0x86: self.i2f,
+        0x85: self.i2l, 0x93: self.i2s}
+
 
     def not_implemented(self):
         return 'not implemented'
@@ -317,6 +319,29 @@ class OpCodes():
         else:
             self.lva[3] = self.op_stack.pop()
 
+    def i2b(self):                          #Josh
+        value1 = self.op_stack.pop()
+        self.op_stack.append(int(value1))
+
+    def i2c(self):
+        value1 = self.op_stack.pop()
+        self.op_stack.append(chr(value1))
+
+    def i2d(self):
+        value1 = self.op_stack.pop()
+        self.op_stack.append(float(value1))
+
+    def i2f(self):
+        value1 = self.op_stack.pop()
+        self.op_stack.append(float(value1))
+
+    def i2l(self):
+        value1 = self.op_stack.pop()
+        self.op_stack.append(int(value1))
+
+    def i2s(self):
+        value1 = self.op_stack.pop()
+        self.op_stack.append(int(value1))
     
 
 if '__main__' == __name__: #pragma: no cover
