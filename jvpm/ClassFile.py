@@ -147,20 +147,24 @@ class ClassFile():
 
     def run_opcodes(self):
         ops = OpCodes()
-        for i in range(0, len(self.attribute_table)):
-            for j in range(0, len(self.attribute_table[i].code) - 1):
+        i = 0
+        j = 0
+        while i < len(self.attribute_table):
+            while j < len(self.attribute_table[i].code):
                 value = self.attribute_table[i].code[j]
                 if value == 54 or value == 21:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
-                elif value == 0xb6:
-                    j += 2
-                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                #elif value == 0xb6:
+                #    j += 2
+                #    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
-                print(ops.op_stack)
-                print(ops.lva)
-
+                #print("stack: ", ops.op_stack)
+                #print("array: ", ops.lva)
+                j += 1
+            i += 1
+        return ops
 
 class OpCodes():
     def __init__(self):
@@ -174,10 +178,11 @@ class OpCodes():
     def not_implemented(self):
         return 'not implemented'
 
-    def interpret(self, value, operands = None, constants = None):
-        if operands is not None and constants is not None:
-            return self.table[value](operands, constants)
-        elif operands is not None and constants is None:
+    def interpret(self, value, operands = None): #, constants = None):
+        #if operands is not None and constants is not None:
+        #    return self.table[value](operands, constants)
+        #elif operands is not None and constants is None:
+        if operands is not None: # and constants is None:
             return self.table[value](operands)
         else:
             return self.table[value]()
@@ -314,16 +319,21 @@ class OpCodes():
 
     
 
-if '__main__' == __name__:
+if '__main__' == __name__: #pragma: no cover
     java = ClassFile() #pragma: no cover
     print('magic: ', java.get_magic()) #pragma: no cover
     print('minor_version: ', java.get_minor()) #pragma: no cover
     print('major_version: ', java.get_major()) #pragma: no cover
     print('constant_pool_count: ', java.get_constant_pool_count()) #pragma: no cover
-    print('interface count: ', java.get_interface_count())
-    print('field count: ', java.get_field_count())
-    print('method count: ', java.get_method_count())
-    java.create_method_table()
-    print('attribute count: ', java.get_attribute_count())
-    java.create_attribute_table()
-    java.run_opcodes()
+    print('parsing constant pool...') #pragma: no cover
+    java.create_c_pool() #pragma: no cover
+    for i in range(0, java.c_pool_table.__len__()): #pragma: no cover
+        constant = java.c_pool_table[i] #pragma: no cover
+        print("Constant #", i, " tag: ", constant.tag, " value: ", constant.info) #pragma: no cover
+    print('interface count: ', java.get_interface_count()) #pragma: no cover
+    print('field count: ', java.get_field_count()) #pragma: no cover
+    print('method count: ', java.get_method_count()) #pragma: no cover
+    java.create_method_table() #pragma: no cover
+    print('attribute count: ', java.get_attribute_count()) #pragma: no cover
+    java.create_attribute_table() #pragma: no cover
+    java.run_opcodes() #pragma: no cover
