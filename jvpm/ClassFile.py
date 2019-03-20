@@ -74,7 +74,7 @@ class ClassFile():
             for x in range (0,bytesNeeded):
                 thing.info.append(self.data[x + index_offset])
                 index_offset += 1
-            print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
+            #print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
         self.cpoolsize = index_offset - 10
         return index_offset - 10
@@ -150,7 +150,7 @@ class ClassFile():
         for i in range(0, len(self.attribute_table)):
             for j in range(0, len(self.attribute_table[i].code) - 1):
                 value = self.attribute_table[i].code[j]
-                if value == 36 or value == 15:
+                if value == 54 or value == 21:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
                 elif value == 0xb6:
@@ -158,6 +158,8 @@ class ClassFile():
                     ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
+                print(ops.op_stack)
+                print(ops.lva)
 
 
 class OpCodes():
