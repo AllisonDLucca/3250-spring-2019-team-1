@@ -225,26 +225,39 @@ class TestOpCodes(unittest.TestCase):
 
     def test_i2b(self):
         m = OpCodes()
-        m.lva.append(0)
-        m.lva.append(1)
-        m.lva.append(2)
         m.op_stack.append(3)
-        m.interpret(0x91)
-        assert OpCodes().i2b() == isinstance(m.lva[3], bytes)
+        m.i2b()
+        assert isinstance(m.op_stack.pop(), int)
 
     def test_i2c(self):
-        assert OpCodes().i2c() == isinstance(value1, chr())
+        m = OpCodes()
+        m.op_stack.append(69)
+        m.i2c()
+        assert isinstance(m.op_stack.pop(), str)
 
     def test_i2d(self):
-        assert OpCodes().i2d() == isinstance(value1, int)
+        m = OpCodes()
+        m.op_stack.append(2)
+        m.i2d()
+        assert isinstance(m.op_stack.pop(), float)
 
     def test_i2f(self):
-        assert OpCodes().i2f() == isinstance(value1, float)
+        m = OpCodes()
+        m.op_stack.append(5)
+        m.i2f()
+        assert isinstance(m.op_stack.pop(), float)
 
     def test_i2l(self):
-        assert OpCodes().i2l() == isinstance(value1, int)
+        m = OpCodes()
+        m.op_stack.append(8)
+        m.i2l()
+        assert isinstance(m.op_stack.pop(), int)
 
     def test_i2s(self):
-        assert OpCodes().i2s() == isinstance(value1, int)
+        m = OpCodes()
+        m.op_stack.append(4)
+        m.i2s()
+        assert isinstance(m.op_stack.pop(), int)
+
 
 

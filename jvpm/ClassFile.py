@@ -155,7 +155,7 @@ class OpCodes():
 
     def i2b(self):                          #Josh
         value1 = self.op_stack.pop()
-        self.op_stack.append(bytes(value1))
+        self.op_stack.append(int(value1))
 
     def i2c(self):
         value1 = self.op_stack.pop()
@@ -163,7 +163,7 @@ class OpCodes():
 
     def i2d(self):
         value1 = self.op_stack.pop()
-        self.op_stack.append(isinstance(value1, int))
+        self.op_stack.append(float(value1))
 
     def i2f(self):
         value1 = self.op_stack.pop()
@@ -171,11 +171,11 @@ class OpCodes():
 
     def i2l(self):
         value1 = self.op_stack.pop()
-        self.op_stack.append(isinstance(value1, int))
+        self.op_stack.append(int(value1))
 
     def i2s(self):
         value1 = self.op_stack.pop()
-        self.op_stack.append(isinstance(value1, int))
+        self.op_stack.append(int(value1))
     
 
 if '__main__' == __name__:
