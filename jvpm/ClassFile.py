@@ -73,7 +73,7 @@ class ClassFile():
                 bytesNeeded = switch.get(thing.tag)
             for x in range (0,bytesNeeded):
                 thing.info.append(self.data[x + index_offset])
-                index_offset += 1
+            index_offset += bytesNeeded
             #print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
         self.cpoolsize = index_offset - 10
