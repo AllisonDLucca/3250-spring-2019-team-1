@@ -335,6 +335,3 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(4)
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
-
-
-

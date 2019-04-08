@@ -155,9 +155,9 @@ class ClassFile():
                 if value == 54 or value == 21:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
-                #elif value == 0xb6:
-                #    j += 2
-                #    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                elif value == 0xb6:
+                    j += 2
+                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
                 #print("stack: ", ops.op_stack)
@@ -174,7 +174,7 @@ class OpCodes():
         0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
         0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
         0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0, 0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d, 0x86: self.i2f,
-        0x85: self.i2l, 0x93: self.i2s}
+        0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual}
 
 
     def not_implemented(self):
@@ -342,7 +342,16 @@ class OpCodes():
     def i2s(self):
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
-    
+
+    def invokevirtual(self, operands, c_pool):
+        value1 = operands.pop()
+        value2 = operands.pop()
+        somevalue = getstrfromcpool(value1 + value2, c_pool)
+        if somevalue == 'java/io/PrintStream.println:(I)V':
+            print(self.op_stack.pop())
+        elif somevalue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
+            print(str(self.op_stack.pop()))
+
 
 if '__main__' == __name__: #pragma: no cover
     java = ClassFile() #pragma: no cover
