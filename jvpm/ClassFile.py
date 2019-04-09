@@ -160,7 +160,7 @@ class ClassFile():
                 #    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
-                #print("stack: ", ops.op_stack)
+                print("stack: ", ops.op_stack)
                 #print("array: ", ops.lva)
                 j += 1
             i += 1
@@ -223,7 +223,10 @@ class OpCodes():
     def idiv(self):
         value2 = self.op_stack.pop()
         value1 = self.op_stack.pop()
-        self.op_stack.append(value1//value2)
+        try:
+            self.op_stack.append(value1//value2)
+        except ZeroDivisionError:
+            print("Error: Divides by Zero")
 
     def imul(self):
         value2 = self.op_stack.pop()
@@ -241,7 +244,10 @@ class OpCodes():
     def irem(self):
         value2 = self.op_stack.pop()
         value1 = self.op_stack.pop()
-        self.op_stack.append(value1 % value2)
+        try:
+            self.op_stack.append(value1 % value2)
+        except ZeroDivisionError:
+            print("Error: Divides by Zero")
     
     def ishl(self):
         value2 = self.op_stack.pop()
