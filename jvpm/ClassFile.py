@@ -344,12 +344,22 @@ class OpCodes():
         self.op_stack.append(int(value1))
 
     def getstrfromcpool(self, index, c_pool):
-        size = c_pool[index]
-        initial = index + 2
-        string = ""
-        for x in range(size):
-            string += chr(c_pool[initial + x])
-        return string
+        constant_type = {
+            "method_ref": 10,
+            "class_ref": 7,
+            "nameandtype_ref": 12}
+        const_ref = c_pool[index]
+
+        if const_ref.tag == constant_type("method_ref"):
+            class_index = const_ref.info(0) + const_ref.info(1)
+            name_type_index = const_ref.info(2) + const_ref.info(3)
+            return self.getstrfromcpool(self, class_index, c_pool) + self.getstrfromcpool(self, name_type_index, c_pool)
+
+        elif const_ref.tag == constant_type("class_ref"):
+            return bytes(const_ref.info).decode("utf-8")
+
+        elif const_ref.tag == constant_type("nameandtype_ref"):
+            return bytes(const_ref.info).decode("utf-8")
 
     def invokevirtual(self, operands, c_pool):
         value1 = operands.pop()
