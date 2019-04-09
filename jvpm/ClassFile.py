@@ -1,16 +1,16 @@
-class ConstantInfo():
+class ConstantInfo
     def __init__(self):
         self.tag = 0
         self.info = []
         self.name_index = 0
 
-class MethodInfo():
+class MethodInfo
     def __init__(self):
         self.access_flags = 0
         self.name_index = 0
         self.descriptor_index = 0
 
-class CodeAttribute():
+class CodeAttribute
     def __init__(self):
         self.attribute_name_index = 0
         self.attribute_length = 0
@@ -19,13 +19,13 @@ class CodeAttribute():
         self.code_length = 0
         self.code = []
 
-class ClassFile():
+class ClassFile:
     def __init__(self):
         with open('Add.class', 'rb') as binary_file:
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
-        #self.interface_table = []
+        # self.interface_table = []
         self.method_table = []
         self.attribute_table = []
 
@@ -62,7 +62,7 @@ class ClassFile():
             18: 4
         }
         max = int(self.get_constant_pool_count()) - 1
-        for i in range (0,max):
+        for i in range(0, max):
             thing = ConstantInfo()
             thing.tag = self.data[index_offset]
             index_offset += 1
@@ -74,13 +74,13 @@ class ClassFile():
             for x in range (0,bytesNeeded):
                 thing.info.append(self.data[x + index_offset])
                 index_offset += 1
-            #print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
+            # print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
         self.cpoolsize = index_offset - 10
         return index_offset - 10
 
     def get_constant_pool_size(self):
-        if(len(self.c_pool_table)!=self.get_constant_pool_count()-1):
+        if len(self.c_pool_table)!=self.get_constant_pool_count()-1:
             self.create_c_pool()
         return self.cpoolsize
 
@@ -96,7 +96,7 @@ class ClassFile():
     def get_interface_count(self):
         return self.data[self.get_constant_pool_size()+16] + self.data[self.get_constant_pool_size()+17]
 
-    #def create_interface(self):
+    # def create_interface(self):
     #    itable = [self.get_interface_count()]
     #    for i in range[0,len(itable)]:
     #        itable[i] = self.data[self.get_constant_pool_size() + 18 + i]
@@ -105,8 +105,8 @@ class ClassFile():
     def get_field_count(self):
         return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
 
-    #def create_field_table(self):
-    #    '''dont wanna do'''
+    # def create_field_table(self):
+    #    '''don't wanna do'''
     #    return
     
     def get_field_size(self):
@@ -157,34 +157,38 @@ class ClassFile():
                     ops.interpret(value, [self.attribute_table[i].code[j]])
                 elif value == 0xb6:
                     j += 2
-                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]],
+                                  self.c_pool_table)
                 else:
                     ops.interpret(value)
-                #print("stack: ", ops.op_stack)
-                #print("array: ", ops.lva)
+                # print("stack: ", ops.op_stack)
+                # print("array: ", ops.lva)
                 j += 1
             i += 1
         return ops
 
-class OpCodes():
+class OpCodes:
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
         self.lva = []       # local variable array initialized
-        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1, 0x05: self.iconst_2, 0x06: self.iconst_3, 
-        0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
-        0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
-        0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0, 0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d, 0x86: self.i2f,
-        0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual}
-
+        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1,
+                      0x05: self.iconst_2, 0x06: self.iconst_3, 0x07: self.iconst_4, 0x08: self.iconst_5,
+                      0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg,
+                      0x80: self.ior,        0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub,
+                      0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
+                      0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
+                      0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b,
+                      0x92: self.i2c, 0x87: self.i2d, 0x86: self.i2f, 0x85: self.i2l, 0x93: self.i2s,
+                      0xb6: self.invokevirtual}
 
     def not_implemented(self):
         return 'not implemented'
 
-    def interpret(self, value, operands = None): #, constants = None):
-        #if operands is not None and constants is not None:
+    def interpret(self, value, operands = None):  # , constants = None):
+        # if operands is not None and constants is not None:
         #    return self.table[value](operands, constants)
-        #elif operands is not None and constants is None:
-        if operands is not None: # and constants is None:
+        # elif operands is not None and constants is None:
+        if operands is not None:  # and constants is None:
             return self.table[value](operands)
         else:
             return self.table[value]()
@@ -319,7 +323,7 @@ class OpCodes():
         else:
             self.lva[3] = self.op_stack.pop()
 
-    def i2b(self):                          #Josh
+    def i2b(self):                          # Josh
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
@@ -361,31 +365,31 @@ class OpCodes():
         elif const_ref.tag == constant_type("nameandtype_ref"):
             return bytes(const_ref.info).decode("utf-8")
 
-    def invokevirtual(self, operands, c_pool):
+    def invoke_virtual(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        somevalue = self.getstrfromcpool(value1 + value2, c_pool)
-        if somevalue == 'java/io/PrintStream.println:(I)V':
+        someValue = self.getstrfromcpool(value1 + value2, c_pool)
+        if someValue == 'java/io/PrintStream.println:(I)V':
             print(self.op_stack.pop())
-        elif somevalue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
+        elif someValue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(str(self.op_stack.pop()))
 
 
-if '__main__' == __name__: #pragma: no cover
-    java = ClassFile() #pragma: no cover
-    print('magic: ', java.get_magic()) #pragma: no cover
-    print('minor_version: ', java.get_minor()) #pragma: no cover
-    print('major_version: ', java.get_major()) #pragma: no cover
-    print('constant_pool_count: ', java.get_constant_pool_count()) #pragma: no cover
-    print('parsing constant pool...') #pragma: no cover
-    java.create_c_pool() #pragma: no cover
-    for i in range(0, java.c_pool_table.__len__()): #pragma: no cover
-        constant = java.c_pool_table[i] #pragma: no cover
-        print("Constant #", i, " tag: ", constant.tag, " value: ", constant.info) #pragma: no cover
-    print('interface count: ', java.get_interface_count()) #pragma: no cover
-    print('field count: ', java.get_field_count()) #pragma: no cover
-    print('method count: ', java.get_method_count()) #pragma: no cover
-    java.create_method_table() #pragma: no cover
-    print('attribute count: ', java.get_attribute_count()) #pragma: no cover
-    java.create_attribute_table() #pragma: no cover
-    java.run_opcodes() #pragma: no cover
+if '__main__' == __name__:  # pragma: no cover
+    java = ClassFile()  # pragma: no cover
+    print('magic: ', java.get_magic())  # pragma: no cover
+    print('minor_version: ', java.get_minor())  # pragma: no cover
+    print('major_version: ', java.get_major())  # pragma: no cover
+    print('constant_pool_count: ', java.get_constant_pool_count())  # pragma: no cover
+    print('parsing constant pool...')  # pragma: no cover
+    java.create_c_pool()  # pragma: no cover
+    for i in range(0, java.c_pool_table.__len__()):  # pragma: no cover
+        constant = java.c_pool_table[i]  # pragma: no cover
+        print("Constant #", i, " tag: ", constant.tag, " value: ", constant.info)  # pragma: no cover
+    print('interface count: ', java.get_interface_count())  # pragma: no cover
+    print('field count: ', java.get_field_count())  # pragma: no cover
+    print('method count: ', java.get_method_count())  # pragma: no cover
+    java.create_method_table()  # pragma: no cover
+    print('attribute count: ', java.get_attribute_count())  # pragma: no cover
+    java.create_attribute_table()  # pragma: no cover
+    java.run_opcodes()  # pragma: no cover
