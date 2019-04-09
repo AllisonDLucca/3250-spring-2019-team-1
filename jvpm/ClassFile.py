@@ -343,10 +343,18 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
+    def getstrfromcpool(self, index, c_pool):
+        size = c_pool[index]
+        initial = index + 2
+        string = ""
+        for x in range(size):
+            string += chr(c_pool[initial + x])
+        return string
+
     def invokevirtual(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        somevalue = getstrfromcpool(value1 + value2, c_pool)
+        somevalue = self.getstrfromcpool(value1 + value2, c_pool)
         if somevalue == 'java/io/PrintStream.println:(I)V':
             print(self.op_stack.pop())
         elif somevalue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
