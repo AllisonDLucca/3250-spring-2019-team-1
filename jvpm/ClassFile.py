@@ -366,13 +366,13 @@ class OpCodes():
             return bytes(const_ref.info).decode("utf-8")
 
     def invokevirtual(self, operands, c_pool):
-        value1 = operands.pop()
-        value2 = operands.pop()
-        somevalue = self.get_str_from_cpool(value1 + value2 - 1, c_pool)
-        if somevalue == 'java/io/PrintStream.println:(I)V':
+        num1 = operands.pop()
+        num2 = operands.pop()
+        method = self.get_str_from_cpool(num1 + num2 - 1, c_pool)
+        if method == 'java/io/PrintStream.println:(I)V':
             print(self.op_stack.pop())
-        elif somevalue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
-            print(str(self.op_stack.pop()))
+        elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
+            print(self.op_stack.pop())
 
 
 if '__main__' == __name__: #pragma: no cover
@@ -393,3 +393,4 @@ if '__main__' == __name__: #pragma: no cover
     print('attribute count: ', java.get_attribute_count()) #pragma: no cover
     java.create_attribute_table() #pragma: no cover
     java.run_opcodes() #pragma: no cover
+

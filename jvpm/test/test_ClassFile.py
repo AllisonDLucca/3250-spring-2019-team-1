@@ -5,6 +5,7 @@ from jvpm.ClassFile import OpCodes
 from jvpm.ClassFile import MethodInfo
 from jvpm.ClassFile import CodeAttribute
 from jvpm.ClassFile import ConstantInfo
+from unittest.mock import patch, call
 
 class TestClassFile(unittest.TestCase):
     def setUp(self):
@@ -358,3 +359,38 @@ class TestOpCodes(unittest.TestCase):
         c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
         m = OpCodes()
         self.assertEqual(m.get_str_from_cpool(0, c), 'A.B:C')
+
+    @patch('builtins.print')
+    def test_invokevirtual(self, mock_print):
+        methrefobj = ConstantInfo()
+        methrefobj.tag = 10
+        methrefobj.info = [0, 2, 0, 3]
+        classobj = ConstantInfo()
+        classobj.tag = 7
+        classobj.info = [0, 4]
+        nameandtypeobj = ConstantInfo()
+        nameandtypeobj.tag = 12
+        nameandtypeobj.info = [0, 5, 0, 6]
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [106, 97, 118, 97, 47, 105, 111, 47, 80, 114, 105, 110, 116, 83, 116, 114, 101, 97, 109]
+        str2 = ConstantInfo()
+        str2.tag = 1
+        str2.info = [112, 114, 105, 110, 116, 108, 110]
+        str3 = ConstantInfo()
+        str3.tag = 1
+        str3.info = [40, 73, 41, 86]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m = OpCodes()
+        m.op_stack.append(5)
+        m.invokevirtual([0, 1], c)
+        str1.info = [106, 97, 118, 97, 47, 105, 111, 47, 80, 114, 105, 110, 116, 83, 116, 114, 101, 97, 109]
+        str2.info = [112, 114, 105, 110, 116, 108, 110]
+        str3.info = [40, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59, 41, 86]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m.op_stack.append("Hello World!")
+        m.invokevirtual([0, 1], c)
+        self.assertEqual(mock_print.mock_calls, [
+            call(5),
+            call('Hello World!')
+        ])
