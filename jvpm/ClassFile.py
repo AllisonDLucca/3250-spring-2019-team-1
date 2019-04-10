@@ -73,7 +73,7 @@ class ClassFile():
                 bytesNeeded = switch.get(thing.tag)
             for x in range (0,bytesNeeded):
                 thing.info.append(self.data[x + index_offset])
-                index_offset += 1
+            index_offset += bytesNeeded
             #print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
         self.cpoolsize = index_offset - 10
@@ -180,11 +180,11 @@ class OpCodes():
     def not_implemented(self):
         return 'not implemented'
 
-    def interpret(self, value, operands = None): #, constants = None):
-        #if operands is not None and constants is not None:
-        #    return self.table[value](operands, constants)
-        #elif operands is not None and constants is None:
-        if operands is not None: # and constants is None:
+    def interpret(self, value, operands = None, constants = None):
+        if operands is not None and constants is not None:
+            return self.table[value](operands, constants)
+        elif operands is not None and constants is None:
+        #if operands is not None: # and constants is None:
             return self.table[value](operands)
         else:
             return self.table[value]()
@@ -343,28 +343,32 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
-    def getstrfromcpool(self, index, c_pool):
-        constant_type = {
-            "method_ref": 10,
-            "class_ref": 7,
-            "nameandtype_ref": 12}
+    def get_str_from_cpool(self, index, c_pool):
+
         const_ref = c_pool[index]
 
-        if const_ref.tag == constant_type("method_ref"):
-            class_index = const_ref.info(0) + const_ref.info(1)
-            name_type_index = const_ref.info(2) + const_ref.info(3)
-            return self.getstrfromcpool(self, class_index, c_pool) + self.getstrfromcpool(self, name_type_index, c_pool)
+        if const_ref.tag != 1:
+            class_index = const_ref.info[0] + const_ref.info[1] - 1
+            val = self.get_str_from_cpool(class_index, c_pool)
 
-        elif const_ref.tag == constant_type("class_ref"):
-            return bytes(const_ref.info).decode("utf-8")
+            if const_ref.tag == 10:
+                val += '.'
+            elif const_ref.tag == 12:
+                val += ':'
 
-        elif const_ref.tag == constant_type("nameandtype_ref"):
+            if const_ref.info.__len__() > 2:
+                name_type_index = const_ref.info[2] + const_ref.info[3] - 1
+                val += self.get_str_from_cpool(name_type_index, c_pool)
+
+            return val
+
+        else:
             return bytes(const_ref.info).decode("utf-8")
 
     def invokevirtual(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        somevalue = self.getstrfromcpool(value1 + value2, c_pool)
+        somevalue = self.get_str_from_cpool(value1 + value2 - 1, c_pool)
         if somevalue == 'java/io/PrintStream.println:(I)V':
             print(self.op_stack.pop())
         elif somevalue == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
