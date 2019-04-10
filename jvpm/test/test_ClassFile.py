@@ -336,5 +336,12 @@ class TestOpCodes(unittest.TestCase):
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
 
+    def test_getstatic(self):
+        m = OpCodes()
+        const_info = ConstantInfo()
+        const_info.tag = 1
+        const_info.info = [70, 111, 111]
+        imp_info = m.getstatic([0,0],[const_info])
+        assert isinstance(imp_info, str)
 
 
