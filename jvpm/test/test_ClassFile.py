@@ -5,10 +5,11 @@ from jvpm.ClassFile import OpCodes
 from jvpm.ClassFile import MethodInfo
 from jvpm.ClassFile import CodeAttribute
 from jvpm.ClassFile import ConstantInfo
+from unittest.mock import patch, call
 
 class TestClassFile(unittest.TestCase):
     def setUp(self):
-        m = mock_open(read_data=b'\xca\xfe\xba\xbe\x00\x03\x00\x2d\x00\x0a\x01\x00\x10\x6a\x61\x76\x61\x2f\x6c\x61\x6e\x67\x2f\x4f\x62\x6a\x65\x63\x74\x01\x00\x0a\x53\x6f\x75\x72\x63\x65\x46\x69\x6c\x65\x01\x00\x04\x6d\x61\x69\x6e\x01\x00\x04\x43\x6f\x64\x65\x01\x00\x16\x28\x5b\x4c\x6a\x61\x76\x61\x2f\x6c\x61\x6e\x67\x2f\x53\x74\x72\x69\x6e\x67\x3b\x29\x56\x07\x00\x09\x01\x00\x07\x74\x65\x73\x74\x32\x2e\x6a\x07\x00\x01\x01\x00\x03\x41\x64\x64\x00\x21\x00\x06\x00\x08\x00\x00\x00\x00\x00\x01\x00\x09\x00\x03\x00\x05\x00\x01\x00\x04\x00\x00\x00\x2f\x00\x01\x00\x01\x00\x00\x00\x07\x04\x05\x60\x36\x00\x15\x00')  # xb6\x50\x21')   x06\x07\x7e\x08\x02\x6c\x05\x06\x68\x07\x74\x08\x03\x80\x04\x05\x70\x06\x07\x78\x08\x04\x7a\x05\x06\x64\x07\x08\x7c\x04\x05\x82\x00\x00\x00\x00\x00\x01\x00\x02\x00\x00\x00\x02\x00\x07')
+        m = mock_open(read_data=b'\xca\xfe\xba\xbe\x00\x03\x00\x2d\x00\x0a\x01\x00\x10\x6a\x61\x76\x61\x2f\x6c\x61\x6e\x67\x2f\x4f\x62\x6a\x65\x63\x74\x01\x00\x0a\x53\x6f\x75\x72\x63\x65\x46\x69\x6c\x65\x01\x00\x04\x6d\x61\x69\x6e\x01\x00\x04\x43\x6f\x64\x65\x01\x00\x16\x28\x5b\x4c\x6a\x61\x76\x61\x2f\x6c\x61\x6e\x67\x2f\x53\x74\x72\x69\x6e\x67\x3b\x29\x56\x07\x00\x09\x01\x00\x07\x74\x65\x73\x74\x32\x2e\x6a\x07\x00\x01\x01\x00\x03\x41\x64\x64\x00\x21\x00\x06\x00\x08\x00\x00\x00\x00\x00\x01\x00\x09\x00\x03\x00\x05\x00\x01\x00\x04\x00\x00\x00\x2f\x00\x01\x00\x01\x00\x00\x00\x0a\x04\x05\x60\x36\x00\x15\x00\xb6\x00\x01')  # x06\x07\x7e\x08\x02\x6c\x05\x06\x68\x07\x74\x08\x03\x80\x04\x05\x70\x06\x07\x78\x08\x04\x7a\x05\x06\x64\x07\x08\x7c\x04\x05\x82\x00\x00\x00\x00\x00\x01\x00\x02\x00\x00\x00\x02\x00\x07')
 
         #_with patch(__name__ + '.open', m):
         with patch('builtins.open', m):
@@ -336,5 +337,60 @@ class TestOpCodes(unittest.TestCase):
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
 
+    def test_get_str_from_cpool(self):
+        methrefobj = ConstantInfo()
+        methrefobj.tag = 10
+        methrefobj.info = [0, 2, 0, 3]
+        classobj = ConstantInfo()
+        classobj.tag = 7
+        classobj.info = [0, 4]
+        nameandtypeobj = ConstantInfo()
+        nameandtypeobj.tag = 12
+        nameandtypeobj.info = [0, 5, 0, 6]
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [0x41]
+        str2 = ConstantInfo()
+        str2.tag = 1
+        str2.info = [0x42]
+        str3 = ConstantInfo()
+        str3.tag = 1
+        str3.info = [0x43]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m = OpCodes()
+        self.assertEqual(m.get_str_from_cpool(0, c), 'A.B:C')
 
-
+    @patch('builtins.print')
+    def test_invokevirtual(self, mock_print):
+        methrefobj = ConstantInfo()
+        methrefobj.tag = 10
+        methrefobj.info = [0, 2, 0, 3]
+        classobj = ConstantInfo()
+        classobj.tag = 7
+        classobj.info = [0, 4]
+        nameandtypeobj = ConstantInfo()
+        nameandtypeobj.tag = 12
+        nameandtypeobj.info = [0, 5, 0, 6]
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [106, 97, 118, 97, 47, 105, 111, 47, 80, 114, 105, 110, 116, 83, 116, 114, 101, 97, 109]
+        str2 = ConstantInfo()
+        str2.tag = 1
+        str2.info = [112, 114, 105, 110, 116, 108, 110]
+        str3 = ConstantInfo()
+        str3.tag = 1
+        str3.info = [40, 73, 41, 86]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m = OpCodes()
+        m.op_stack.append(5)
+        m.invokevirtual([0, 1], c)
+        str1.info = [106, 97, 118, 97, 47, 105, 111, 47, 80, 114, 105, 110, 116, 83, 116, 114, 101, 97, 109]
+        str2.info = [112, 114, 105, 110, 116, 108, 110]
+        str3.info = [40, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59, 41, 86]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m.op_stack.append("Hello World!")
+        m.invokevirtual([0, 1], c)
+        self.assertEqual(mock_print.mock_calls, [
+            call(5),
+            call('Hello World!')
+        ])
