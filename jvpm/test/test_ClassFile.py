@@ -335,3 +335,26 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(4)
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
+
+    def test_get_str_from_cpool(self):
+        methrefobj = ConstantInfo()
+        methrefobj.tag = 10
+        methrefobj.info = [0, 2, 0, 3]
+        classobj = ConstantInfo()
+        classobj.tag = 7
+        classobj.info = [0, 4]
+        nameandtypeobj = ConstantInfo()
+        nameandtypeobj.tag = 12
+        nameandtypeobj.info = [0, 5, 0, 6]
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [0x41]
+        str2 = ConstantInfo()
+        str2.tag = 1
+        str2.info = [0x42]
+        str3 = ConstantInfo()
+        str3.tag = 1
+        str3.info = [0x43]
+        c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
+        m = OpCodes()
+        self.assertEqual(m.get_str_from_cpool(0, c), 'A.B:C')
