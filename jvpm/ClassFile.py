@@ -184,7 +184,6 @@ class OpCodes():
         if operands is not None and constants is not None:
             return self.table[value](operands, constants)
         elif operands is not None and constants is None:
-        #if operands is not None: # and constants is None:
             return self.table[value](operands)
         else:
             return self.table[value]()
