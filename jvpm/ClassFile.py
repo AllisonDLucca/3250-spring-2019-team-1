@@ -1,4 +1,4 @@
-class ConstantInfo():
+ class ConstantInfo():
     def __init__(self):
         self.tag = 0
         self.info = []
@@ -174,7 +174,7 @@ class OpCodes():
         0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
         0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
         0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0, 0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d, 0x86: self.i2f,
-        0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual}
+        0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic}
 
 
     def not_implemented(self):
@@ -372,6 +372,11 @@ class OpCodes():
             print(self.op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(self.op_stack.pop())
+            
+    def getstatic(self, operands, c_pool):
+        value1 = operands.pop()
+        value2 = operands.pop()
+        return getstrfromcpool(value1 + value2, c_pool)
 
 
 if '__main__' == __name__: #pragma: no cover
@@ -392,4 +397,3 @@ if '__main__' == __name__: #pragma: no cover
     print('attribute count: ', java.get_attribute_count()) #pragma: no cover
     java.create_attribute_table() #pragma: no cover
     java.run_opcodes() #pragma: no cover
-
