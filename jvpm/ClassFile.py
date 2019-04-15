@@ -226,7 +226,7 @@ class OpCodes():
         try:
             self.op_stack.append(value1//value2)
         except ZeroDivisionError:
-            print("Error: Divides by Zero")
+            return 'Error: Divides by Zero'
 
     def imul(self):
         value2 = self.op_stack.pop()
@@ -247,7 +247,7 @@ class OpCodes():
         try:
             self.op_stack.append(value1 % value2)
         except ZeroDivisionError:
-            print("Error: Divides by Zero")
+            return 'Error: Divides by Zero'
     
     def ishl(self):
         value2 = self.op_stack.pop()
