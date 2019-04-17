@@ -58,7 +58,10 @@ class OpCodes():
     def idiv(self):
         value2 = self.op_stack.pop()
         value1 = self.op_stack.pop()
-        self.op_stack.append(value1 // value2)
+        try:
+            self.op_stack.append(value1//value2)
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
 
     def imul(self):
         value2 = self.op_stack.pop()
@@ -76,7 +79,10 @@ class OpCodes():
     def irem(self):
         value2 = self.op_stack.pop()
         value1 = self.op_stack.pop()
-        self.op_stack.append(value1 % value2)
+        try:
+            self.op_stack.append(value1 % value2)
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
 
     def ishl(self):
         value2 = self.op_stack.pop()
