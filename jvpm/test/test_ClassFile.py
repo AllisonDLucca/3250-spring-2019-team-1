@@ -139,6 +139,9 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(3)
         m.interpret(0x6c)
         self.assertEqual(m.op_stack.pop(), 2)
+        m.op_stack.append(6)
+        m.op_stack.append(0)
+        self.assertEqual(m.interpret(0x6c), 'Error: Divides by Zero')
 
     def test_imul(self):
         m = OpCodes()
@@ -166,6 +169,9 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(3)
         m.interpret(0x70)
         self.assertEqual(m.op_stack.pop(), 1)
+        m.op_stack.append(7)
+        m.op_stack.append(0)
+        self.assertEqual(m.interpret(0x70), 'Error: Divides by Zero')
 
     def test_ishl(self):
         m = OpCodes()
