@@ -75,4 +75,3 @@ class TestClassFile(unittest.TestCase):
         self.cf.create_attribute_table()
         ops = self.cf.run_opcodes()
         self.assertEqual(ops.op_stack, [3])
-
