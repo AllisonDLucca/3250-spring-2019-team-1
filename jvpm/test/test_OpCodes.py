@@ -373,6 +373,56 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0xa)
         self.assertEqual(1, m.op_stack.pop())
 
+    def test_lstore_0(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.interpret(0x3f)
+        self.assertEqual(m.lva[0], '00000000000000000000000000000000')
+        self.assertEqual(m.lva[1], '00000000000000000000000000000001')
+        m.op_stack.append(-1)
+        m.interpret(0x3f)
+        self.assertEqual(m.lva[0], '11111111111111111111111111111111')
+        self.assertEqual(m.lva[1], '11111111111111111111111111111111')
+
+    def test_lstore_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x40)
+        self.assertEqual(m.lva[1], '00000000000000000000000000000000')
+        self.assertEqual(m.lva[2], '00000000000000000000000000000001')
+        m.op_stack.append(-1)
+        m.interpret(0x40)
+        self.assertEqual(m.lva[1], '11111111111111111111111111111111')
+        self.assertEqual(m.lva[2], '11111111111111111111111111111111')
+
+    def test_lstore_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x41)
+        self.assertEqual(m.lva[2], '00000000000000000000000000000000')
+        self.assertEqual(m.lva[3], '00000000000000000000000000000001')
+        m.op_stack.append(-1)
+        m.interpret(0x41)
+        self.assertEqual(m.lva[2], '11111111111111111111111111111111')
+        self.assertEqual(m.lva[3], '11111111111111111111111111111111')
+
+    def test_lstore_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x42)
+        self.assertEqual(m.lva[3], '00000000000000000000000000000000')
+        self.assertEqual(m.lva[4], '00000000000000000000000000000001')
+        m.op_stack.append(-1)
+        m.interpret(0x42)
+        self.assertEqual(m.lva[3], '11111111111111111111111111111111')
+        self.assertEqual(m.lva[4], '11111111111111111111111111111111')
+
     def test_binarystring2int(self):
         m = OpCodes()
         self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)

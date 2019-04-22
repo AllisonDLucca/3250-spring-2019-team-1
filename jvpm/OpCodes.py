@@ -15,7 +15,8 @@ class OpCodes():
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
                       0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
-                      0x9: self.lconst_0, 0xa: self.lconst_1}
+                      0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
+                      0x41: self.lstore_2, 0x42: self.lstore_3}
 
     def not_implemented(self):
         return 'not implemented'
@@ -219,6 +220,58 @@ class OpCodes():
 
     def lconst_1(self):
         self.op_stack.append(1)
+
+    def lstore_0(self):
+        val = np.binary_repr(self.op_stack.pop(), 64)
+        frag1, frag2 = val[:len(val)//2], val[len(val)//2:]
+        if len(self.lva) == 0:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[0] = frag1
+            if len(self.lva) == 1:
+                self.lva.append(frag2)
+            else:
+                self.lva[1] = frag2
+
+    def lstore_1(self):
+        val = np.binary_repr(self.op_stack.pop(), 64)
+        frag1, frag2 = val[:len(val)//2], val[len(val)//2:]
+        if len(self.lva) == 1:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[1] = frag1
+            if len(self.lva) == 2:
+                self.lva.append(frag2)
+            else:
+                self.lva[2] = frag2
+
+    def lstore_2(self):
+        val = np.binary_repr(self.op_stack.pop(), 64)
+        frag1, frag2 = val[:len(val)//2], val[len(val)//2:]
+        if len(self.lva) == 2:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[2] = frag1
+            if len(self.lva) == 3:
+                self.lva.append(frag2)
+            else:
+                self.lva[3] = frag2
+
+    def lstore_3(self):
+        val = np.binary_repr(self.op_stack.pop(), 64)
+        frag1, frag2 = val[:len(val)//2], val[len(val)//2:]
+        if len(self.lva) == 3:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[3] = frag1
+            if len(self.lva) == 4:
+                self.lva.append(frag2)
+            else:
+                self.lva[4] = frag2
 
     def get_str_from_cpool(self, index, c_pool):
 
