@@ -12,7 +12,7 @@ addons:
       secure: ${SONAR_TOKEN}
 
 install:
-  - pip install codecov
+  - pip install -r requirments.txt
 
 script:
   - coverage run --omit=*test* -m unittest
