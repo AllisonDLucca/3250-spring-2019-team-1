@@ -1,3 +1,6 @@
+import re
+
+
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -214,6 +217,13 @@ class OpCodes():
             print(self.op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(self.op_stack.pop())
+        elif method == 'java/util/Scanner.nextInt:()I':
+            data = input("Enter a number: ")
+            while re.match(r"[-+]?\d+$", data is None):
+                print("Invalid input")
+                data = input("Enter a number: ")
+            int1 = int(data)
+            self.op_stack.append(int1)
 
     def getstatic(self, operands, c_pool):
         value1 = operands.pop()
