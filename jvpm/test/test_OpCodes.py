@@ -423,6 +423,21 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m.lva[3], '11111111111111111111111111111111')
         self.assertEqual(m.lva[4], '11111111111111111111111111111111')
 
+    def test_lstore(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x37, [4])
+        self.assertEqual(m.lva[4], '00000000000000000000000000000000')
+        self.assertEqual(m.lva[5], '00000000000000000000000000000001')
+        m.op_stack.append(-1)
+        m.interpret(0x37, [4])
+        self.assertEqual(m.lva[4], '11111111111111111111111111111111')
+        self.assertEqual(m.lva[5], '11111111111111111111111111111111')
+
     def test_binarystring2int(self):
         m = OpCodes()
         self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)
