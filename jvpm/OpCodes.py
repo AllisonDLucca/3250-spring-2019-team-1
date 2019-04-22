@@ -16,7 +16,8 @@ class OpCodes():
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
                       0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
                       0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
-                      0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore}
+                      0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
+                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg}
 
     def not_implemented(self):
         return 'not implemented'
@@ -286,6 +287,40 @@ class OpCodes():
                 self.lva.append(frag2)
             else:
                 self.lva[index + 1] = frag2
+
+    def ladd(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 + value2)
+
+    def lsub(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 - value2)
+
+    def lmul(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        self.op_stack.append(value1 * value2)
+
+    def ldiv(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        try:
+            self.op_stack.append(value1//value2)
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
+
+    def lrem(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        try:
+            self.op_stack.append(value1 % value2)
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
+
+    def lneg(self):
+        self.op_stack.append(self.op_stack.pop() * -1)
 
     def get_str_from_cpool(self, index, c_pool):
 

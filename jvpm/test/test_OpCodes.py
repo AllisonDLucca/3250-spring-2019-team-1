@@ -438,6 +438,53 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m.lva[4], '11111111111111111111111111111111')
         self.assertEqual(m.lva[5], '11111111111111111111111111111111')
 
+    def test_ladd(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.op_stack.append(2)
+        m.interpret(0x61)
+        self.assertEqual(m.op_stack.pop(), 3)
+
+    def test_lsub(self):
+        m = OpCodes()
+        m.op_stack.append(2)
+        m.op_stack.append(1)
+        m.interpret(0x65)
+        self.assertEqual(m.op_stack.pop(), 1)
+
+    def test_lmul(self):
+        m = OpCodes()
+        m.op_stack.append(3)
+        m.op_stack.append(2)
+        m.interpret(0x69)
+        self.assertEqual(m.op_stack.pop(), 6)
+
+    def test_ldiv(self):
+        m = OpCodes()
+        m.op_stack.append(6)
+        m.op_stack.append(3)
+        m.interpret(0x6d)
+        self.assertEqual(m.op_stack.pop(), 2)
+        m.op_stack.append(6)
+        m.op_stack.append(0)
+        self.assertEqual(m.interpret(0x6c), 'Error: Divides by Zero')
+
+    def test_lrem(self):
+        m = OpCodes()
+        m.op_stack.append(7)
+        m.op_stack.append(3)
+        m.interpret(0x71)
+        self.assertEqual(m.op_stack.pop(), 1)
+        m.op_stack.append(7)
+        m.op_stack.append(0)
+        self.assertEqual(m.interpret(0x71), 'Error: Divides by Zero')
+
+    def test_lneg(self):
+        m = OpCodes()
+        m.op_stack.append(1)
+        m.interpret(0x75)
+        self.assertEqual(m.op_stack.pop(), -1)
+
     def test_binarystring2int(self):
         m = OpCodes()
         self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)
