@@ -304,11 +304,69 @@ class TestOpCodes(unittest.TestCase):
         n.interpret(0x1e)
         self.assertEqual(n.op_stack.pop(), -1)
 
+    def test_lload_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append('00000000000000000000000000000000')
+        m.lva.append('00000000000000000000000000000001')
+        m.interpret(0x1f)
+        self.assertEqual(m.op_stack.pop(), 1)
+        n = OpCodes()
+        n.lva.append(0)
+        n.lva.append('11111111111111111111111111111111')
+        n.lva.append('11111111111111111111111111111111')
+        n.interpret(0x1f)
+        self.assertEqual(n.op_stack.pop(), -1)
+
+    def test_lload_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append('00000000000000000000000000000000')
+        m.lva.append('00000000000000000000000000000001')
+        m.interpret(0x20)
+        self.assertEqual(m.op_stack.pop(), 1)
+        n = OpCodes()
+        n.lva.append(0)
+        n.lva.append(0)
+        n.lva.append('11111111111111111111111111111111')
+        n.lva.append('11111111111111111111111111111111')
+        n.interpret(0x20)
+        self.assertEqual(n.op_stack.pop(), -1)
+
+    def test_lload_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append('00000000000000000000000000000000')
+        m.lva.append('00000000000000000000000000000001')
+        m.interpret(0x21)
+        self.assertEqual(m.op_stack.pop(), 1)
+        n = OpCodes()
+        n.lva.append(0)
+        n.lva.append(0)
+        n.lva.append(0)
+        n.lva.append('11111111111111111111111111111111')
+        n.lva.append('11111111111111111111111111111111')
+        n.interpret(0x21)
+        self.assertEqual(n.op_stack.pop(), -1)
+
+    def test_lload(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.lva.append(3)
+        m.lva.append('00000000000000000000000000000000')
+        m.lva.append('00000000000000000000000000000001')
+        m.interpret(0x16, [4])
+        self.assertEqual(m.op_stack.pop(), 1)
+
     def test_binarystring2int(self):
         m = OpCodes()
         self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)
         self.assertEqual(m.binarystring2int('1111111111111111111111111111111111111111111111111111111111111111'), -1)
-
 
     @patch('builtins.print')
     def test_invokevirtual(self, mock_print):

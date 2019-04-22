@@ -14,7 +14,7 @@ class OpCodes():
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
-                      0x1e: self.lload_0}
+                      0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload}
 
     def not_implemented(self):
         return 'not implemented'
@@ -190,6 +190,27 @@ class OpCodes():
     def lload_0(self):
         frag1 = self.lva[0]
         frag2 = self.lva[1]
+        self.op_stack.append(self.binarystring2int(frag1+frag2))
+
+    def lload_1(self):
+        frag1 = self.lva[1]
+        frag2 = self.lva[2]
+        self.op_stack.append(self.binarystring2int(frag1+frag2))
+
+    def lload_2(self):
+        frag1 = self.lva[2]
+        frag2 = self.lva[3]
+        self.op_stack.append(self.binarystring2int(frag1+frag2))
+
+    def lload_3(self):
+        frag1 = self.lva[3]
+        frag2 = self.lva[4]
+        self.op_stack.append(self.binarystring2int(frag1+frag2))
+
+    def lload(self, operands):
+        index = operands.pop()
+        frag1 = self.lva[index]
+        frag2 = self.lva[index+1]
         self.op_stack.append(self.binarystring2int(frag1+frag2))
 
     def get_str_from_cpool(self, index, c_pool):
