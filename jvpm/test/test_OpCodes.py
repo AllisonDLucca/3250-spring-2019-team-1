@@ -292,6 +292,24 @@ class TestOpCodes(unittest.TestCase):
         m = OpCodes()
         self.assertEqual(m.get_str_from_cpool(0, c), 'A.B:C')
 
+    def test_lload_0(self):
+        m = OpCodes()
+        m.lva.append('00000000000000000000000000000000')
+        m.lva.append('00000000000000000000000000000001')
+        m.interpret(0x1e)
+        self.assertEqual(m.op_stack.pop(), 1)
+        n = OpCodes()
+        n.lva.append('11111111111111111111111111111111')
+        n.lva.append('11111111111111111111111111111111')
+        n.interpret(0x1e)
+        self.assertEqual(n.op_stack.pop(), -1)
+
+    def test_binarystring2int(self):
+        m = OpCodes()
+        self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)
+        self.assertEqual(m.binarystring2int('1111111111111111111111111111111111111111111111111111111111111111'), -1)
+
+
     @patch('builtins.print')
     def test_invokevirtual(self, mock_print):
         methrefobj = ConstantInfo()

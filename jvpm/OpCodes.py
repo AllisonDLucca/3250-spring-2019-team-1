@@ -1,3 +1,5 @@
+import numpy as np
+
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -11,7 +13,8 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic}
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
+                      0x1e: self.lload_0}
 
     def not_implemented(self):
         return 'not implemented'
@@ -184,6 +187,11 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
+    def lload_0(self):
+        frag1 = self.lva[0]
+        frag2 = self.lva[1]
+        self.op_stack.append(self.binarystring2int(frag1+frag2))
+
     def get_str_from_cpool(self, index, c_pool):
 
         const_ref = c_pool[index]
@@ -219,3 +227,10 @@ class OpCodes():
         value1 = operands.pop()
         value2 = operands.pop()
         return self.get_str_from_cpool(value1 + value2, c_pool)
+
+    def binarystring2int(self, val):    # With some help from stack overflow
+        val = int(val, 2)
+        if (val & (1 << (64 - 1))) != 0:
+            val = val - (1 << 64)
+        return val
+
