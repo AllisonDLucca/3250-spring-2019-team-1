@@ -363,6 +363,16 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x16, [4])
         self.assertEqual(m.op_stack.pop(), 1)
 
+    def test_lconst_0(self):
+        m = OpCodes()
+        m.interpret(0x9)
+        self.assertEqual(0, m.op_stack.pop())
+
+    def test_lconst_1(self):
+        m = OpCodes()
+        m.interpret(0xa)
+        self.assertEqual(1, m.op_stack.pop())
+
     def test_binarystring2int(self):
         m = OpCodes()
         self.assertEqual(m.binarystring2int('0000000000000000000000000000000000000000000000000000000000000001'), 1)
