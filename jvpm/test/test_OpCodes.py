@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from jvpm.OpCodes import OpCodes
 from jvpm.ClassFile import ConstantInfo
 from unittest.mock import patch, call
@@ -334,3 +335,58 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
+
+    def test_fconst_0(self):
+        m = OpCodes()
+        m.interpret(0xb)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fconst_1(self):
+        m = OpCodes()
+        m.interpret(0xc)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fconst_2(self):
+        m = OpCodes()
+        m.interpret(0xd)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.lva.append(4.0)
+        m.interpret(0x17, [4])
+        self.assertEqual(m.op_stack.pop(), 4)
+
+    def test_fload_0(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.interpret(0x22)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fload_1(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.interpret(0x23)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fload_2(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.interpret(0x24)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload_3(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.interpret(0x25)
+        self.assertEqual(m.op_stack.pop(), np.float32(3.0))
