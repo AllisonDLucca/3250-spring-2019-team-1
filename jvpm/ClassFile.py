@@ -1,4 +1,6 @@
 from jvpm.OpCodes import OpCodes
+import numpy as np
+import re
 
 class ConstantInfo():
     def __init__(self):
@@ -118,6 +120,9 @@ class ClassFile():
         return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
 
     def create_method_table(self):
+        if self.method_table.__len__() > 0:
+            return self.method_table
+
         count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_method_count()):
             mtable = MethodInfo()
@@ -132,6 +137,9 @@ class ClassFile():
         return self.data[count] + self.data[1 + count]
 
     def create_attribute_table(self):
+        if self.attribute_table.__len__() > 0:
+            return self.attribute_table
+
         count = 30 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_attribute_count()):
             codeAtt = CodeAttribute()
@@ -149,27 +157,40 @@ class ClassFile():
 
     def run_opcodes(self):
         ops = OpCodes()
-        i = 0
-        j = 0
-        while i < len(self.attribute_table):
-            while j < len(self.attribute_table[i].code):
-                value = self.attribute_table[i].code[j]
-                if value == 54 or value == 21:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]])
-                elif value == 0x12:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]], self.c_pool_table)
-                elif value == 0xb6 or value == 0xb2:
-                    j += 2
-                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+        table_index = 0
+        code_index = 0
+        while table_index < len(self.attribute_table):
+            while code_index < len(self.attribute_table[table_index].code):
+                value = self.attribute_table[table_index].code[code_index]
+                code_index += 1
+
+                num_operands = self.add_necessary_operands_to_stack(value, table_index, code_index, ops)
+                code_index += num_operands
+
+                if value == 0x12 or value == 0xb6 or value == 0xb2:
+                    ops.interpret(value, self.c_pool_table)
                 else:
                     ops.interpret(value)
                 print("stack: ", ops.op_stack)
-                #print("array: ", ops.lva)
-                j += 1
-            i += 1
+            table_index += 1
         return ops
+
+    def add_necessary_operands_to_stack(self, value, table_index, code_index, ops):
+        switch = {
+            0x36: 1,
+            0x15: 1,
+            0x12: 1,
+            0xb6: 2,
+            0xb2: 2
+        }
+        num_operands = switch.get(value)
+        if num_operands is None:
+            return 0
+
+        for i in range(0, num_operands):
+            ops.op_stack.append(self.attribute_table[table_index].code[code_index + i])
+        return num_operands
+
 
 if '__main__' == __name__: #pragma: no cover
     java = ClassFile() #pragma: no cover

@@ -4,6 +4,7 @@ from jvpm.ClassFile import ClassFile
 from jvpm.ClassFile import MethodInfo
 from jvpm.ClassFile import CodeAttribute
 from jvpm.ClassFile import ConstantInfo
+from jvpm.OpCodes import OpCodes
 from unittest.mock import patch, call
 
 class TestClassFile(unittest.TestCase):
@@ -75,3 +76,12 @@ class TestClassFile(unittest.TestCase):
         self.cf.create_attribute_table()
         ops = self.cf.run_opcodes()
         self.assertEqual(ops.op_stack, [3])
+
+    def test_add_necessary_operands_to_stack(self):
+        self.cf.create_attribute_table()
+        ops = OpCodes()
+        self.cf.add_necessary_operands_to_stack(0xaa, 0, 0, ops)
+        self.assertEqual(0, ops.op_stack.__len__())
+        ops.op_stack.clear()
+        self.cf.add_necessary_operands_to_stack(0x36, 0, 0, ops)
+        self.assertEqual(1, ops.op_stack.__len__())
