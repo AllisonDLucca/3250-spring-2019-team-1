@@ -11,7 +11,7 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic}
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc}
 
     def not_implemented(self):
         return 'not implemented'
@@ -219,3 +219,7 @@ class OpCodes():
         value1 = operands.pop()
         value2 = operands.pop()
         return self.get_str_from_cpool(value1 + value2, c_pool)
+
+    def ldc(self, operands, c_pool):
+        value = operands.pop()
+        self.op_stack.append(self.get_str_from_cpool(value, c_pool))

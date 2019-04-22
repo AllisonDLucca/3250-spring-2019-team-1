@@ -157,6 +157,9 @@ class ClassFile():
                 if value == 54 or value == 21:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
+                elif value == 0x12:
+                    j += 1
+                    ops.interpret(value, [self.attribute_table[i].code[j]], self.c_pool_table)
                 elif value == 0xb6 or value == 0xb2:
                     j += 2
                     ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
