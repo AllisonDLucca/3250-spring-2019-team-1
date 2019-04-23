@@ -1,3 +1,6 @@
+import numpy as np
+import struct
+
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -11,7 +14,8 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic}
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x8b: self.f2i,
+                      0x8c: self.f2l,0x8d: self.f2d}
 
     def not_implemented(self):
         return 'not implemented'
@@ -219,3 +223,22 @@ class OpCodes():
         value1 = operands.pop()
         value2 = operands.pop()
         return self.get_str_from_cpool(value1 + value2, c_pool)
+
+    def f2i(self):
+        value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
+        self.op_stack.append(np.int32(value1))
+
+    def f2l(self):
+        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        value2 = np.right_shift(value1, 32)
+        value3 = np.bitwise_and(value1, 0x00000000FFFFFFFF)
+        self.op_stack.append(np.int32(value2))
+        self.op_stack.append(np.int32(value3))
+
+    def f2d(self):
+        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        hexval = hex(struct.unpack('<Q', struct.pack('<d', value1))[0])
+        value2 = hexval[2:10]
+        value3 = hexval[10:18]
+        self.op_stack.append(int(value2, 16))
+        self.op_stack.append(int(value3, 16))
