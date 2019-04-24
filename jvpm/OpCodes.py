@@ -375,40 +375,40 @@ class OpCodes():
         if value1 >= 0:
             self.op_stack.append(value1 >> s)
         else:
-            self.op_stack.append((value1 + 0x1000000000000000) >> s)
+            self.op_stack.append((value1 + 0x10000000000000000) >> s)
 
     def land(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        value4 = self.op_stack.pop()
-        value3 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        valueb = self.longcomb(value3, value4)
-        answer = valuea & valueb
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op & second_op
         answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
 
     def lor(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        value4 = self.op_stack.pop()
-        value3 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        valueb = self.longcomb(value3, value4)
-        answer = valuea | valueb
-        answer1, answer2= self.longsplit(answer)
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op | second_op
+        answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
 
     def lxor(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        value4 = self.op_stack.pop()
-        value3 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        valueb = self.longcomb(value3, value4)
-        answer = valuea ^ valueb
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op ^ second_op
         answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
