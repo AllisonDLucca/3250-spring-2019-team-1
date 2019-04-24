@@ -23,7 +23,7 @@ class CodeAttribute():
 
 class ClassFile():
     def __init__(self):
-        with open('Foo.class', 'rb') as binary_file:
+        with open('TestyTesticles.class', 'rb') as binary_file:
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0

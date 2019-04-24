@@ -370,3 +370,7 @@ class TestOpCodes(unittest.TestCase):
         m.f2d()
         self.assertEqual(m.op_stack.pop(), 0)
         self.assertEqual(m.op_stack.pop(), 0x3ff00000)
+
+    def test_ret(self):
+        m = OpCodes()
+        self.assertEqual(m.ret(), '')

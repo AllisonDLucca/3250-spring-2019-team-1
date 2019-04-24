@@ -17,7 +17,7 @@ class OpCodes():
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
-                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d}
+                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret}
 
 
     def not_implemented(self):
@@ -256,3 +256,6 @@ class OpCodes():
         value3 = hexval[10:18]
         self.op_stack.append(int(value2, 16))
         self.op_stack.append(int(value3, 16))
+
+    def ret(self):
+        return ''
