@@ -6,18 +6,16 @@ class OpCodes():
         self.op_stack = []  # operand stack for the opcodes
         self.lva = []  # local variable array initialized
         self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1,
-                      0x05: self.iconst_2, 0x06: self.iconst_3,
-                      0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv,
-                      0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
-                      0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr,
-                      0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
+                      0x05: self.iconst_2, 0x06: self.iconst_3, 0x07: self.iconst_4, 0x08: self.iconst_5,
+                      0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv, 0x68: self.imul, 0x74: self.ineg,
+                      0x80: self.ior, 0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub,
+                      0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
-                      0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
-                      0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x38: self.fstore,
-                      0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2, 0x46: self.fstore_3,
-                      0x30: self.faload, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul, 0x6e: self.fdiv,
-                      0x72: self.frem, 0x76: self.fneg}
+                      0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d,
+                      0x86: self.i2f, 0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
+                      0x38: self.fstore, 0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2,
+                      0x46: self.fstore_3, 0x30: self.faload, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
+                      0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg}
 
     def not_implemented(self):
         return 'not implemented'
@@ -217,12 +215,13 @@ class OpCodes():
 
     def fstore_3(self):
         if len(self.lva) == 3:
-            self.lva.append(self.op_stack.pop())
+            self.lva.append(np.float32(self.op_stack.pop()))
         else:
-            self.lva[3] = self.op_stack.pop()
+            self.lva[3] = np.float32(self.op_stack.pop())
 
-    def faload(self):
-        value = 0.0
+    # def faload(self):
+    #    arrayRef = self.op_stack.pop()
+    #   index = self.op_stack.pop()
 
     def fadd(self):
         value2 = np.float32(self.op_stack.pop())
