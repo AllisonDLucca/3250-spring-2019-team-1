@@ -285,7 +285,6 @@ class TestOpCodes(unittest.TestCase):
 
     def test_fstore_0(self):
         m = OpCodes()
-        m.lva.append(0.0)
         m.op_stack.append(1.0)
         m.interpret(0x43)
         self.assertEqual(m.lva[0], 1.0)
@@ -295,20 +294,68 @@ class TestOpCodes(unittest.TestCase):
 
     def test_fstore_1(self):
         m = OpCodes()
-        m.lva.append(1.0)
+        m.lva.append(0.0)
         m.op_stack.append(1.0)
-        m.interpret(0x43)
+        m.interpret(0x44)
         self.assertEqual(m.lva[1], 1.0)
         m.op_stack.append(2.0)
-        m.interpret(0x43)
+        m.interpret(0x44)
         self.assertEqual(m.lva[1], 2.0)
+
+    def test_fstore_2(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.op_stack.append(2.0)
+        m.interpret(0x45)
+        self.assertEqual(m.lva[2], 2.0)
+        m.op_stack.append(3.0)
+        m.interpret(0x45)
+        self.assertEqual(m.lva[2], 3.0)
+
+    def test_fstore_3(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.op_stack.append(3.0)
+        m.interpret(0x46)
+        self.assertEqual(m.lva[3], 3.0)
+        m.op_stack.append(4.0)
+        m.interpret(0x46)
+        self.assertEqual(m.lva[3], 4.0)
 
     def test_fadd(self):
         m = OpCodes()
-        m.op_stack.append(0)
-        m.op_stack.append(-0)
+        m.op_stack.append(np.float32(1.5))
+        m.op_stack.append(np.float32(2.4))
         m.interpret(0x62)
-        self.assertEqual(m.op_stack.pop(), 0)
+        self.assertEqual(m.op_stack.pop(), np.float32(3.9))
+
+    def test_fsub(self):
+        m = OpCodes()
+        m.op_stack.append(np.float32(3.5))
+        m.op_stack.append(np.float32(1.4))
+        m.interpret(0x66)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.1))
+
+    def test_fmul(self):
+        m = OpCodes()
+        m.op_stack.append(np.float32(2.5))
+        m.op_stack.append(np.float32(1.0))
+        m.interpret(0x6a)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.5))
+
+    def test_fdiv(self):
+        m = OpCodes()
+        m.op_stack.append(np.float32(2.0))
+        m.op_stack.append(np.float32(2.0))
+        m.interpret(0x6e)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+        m.op_stack.append(np.float32(2.0))
+        m.op_stack.append(np.float32(0.0))
+        m.interpret(0x6e)
+        self.assertEqual(m.op_stack.pop(), 'Error: Divides by Zero')
 
     def test_get_str_from_cpool(self):
         methrefobj = ConstantInfo()
