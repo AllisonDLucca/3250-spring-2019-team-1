@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from jvpm.OpCodes import OpCodes
 from jvpm.ClassFile import ConstantInfo
 from unittest.mock import patch, call
@@ -341,3 +342,23 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
+
+    def test_f2i(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2i()
+        self.assertEqual(np.dtype(m.op_stack.pop()), 'int32')
+
+    def test_f2l(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2l()
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_f2d(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2d()
+        self.assertEqual(m.op_stack.pop(), 0)
+        self.assertEqual(m.op_stack.pop(), 0x3ff00000)
