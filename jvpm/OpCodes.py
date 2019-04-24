@@ -232,11 +232,11 @@ class OpCodes():
     def getstatic(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        return self.get_str_from_cpool(value1 + value2, c_pool)
+        return self.get_str_from_cpool(value1 + value2 - 1, c_pool)
 
     def ldc(self, operands, c_pool):
         value = operands.pop()
-        self.op_stack.append(self.get_str_from_cpool(value, c_pool))
+        self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
 
     def f2i(self):
         value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
