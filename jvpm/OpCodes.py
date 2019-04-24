@@ -219,7 +219,7 @@ class OpCodes():
             print(self.op_stack.pop())
         elif method == 'java/util/Scanner.nextInt:()I':
             data = input("Enter a number: ")
-            while re.match(r"[-+]?\d+$", data is None):
+            while re.match(r"[-+]?\d+$", data) is None:
                 print("Invalid input")
                 data = input("Enter a number: ")
             int1 = int(data)
