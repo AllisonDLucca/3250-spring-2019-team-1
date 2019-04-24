@@ -327,6 +327,13 @@ class TestOpCodes(unittest.TestCase):
             call(5),
             call('Hello World!')
         ])
+        with patch('builtins.input', return_value='5'):
+            str1.info = [110, 101, 120, 116, 73, 110, 116, 58, 40, 41, 73]
+            str2.info = [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 83, 99, 97, 110, 110, 101, 114]
+            c = [methrefobj, classobj, str1, str2]
+            m.invokevirtual([0, 1], c)
+            m.op_stack.append(5)
+            self.assertEqual(m.op_stack.pop(), 5)
 
     def test_getstatic(self):
         m = OpCodes()
@@ -335,6 +342,14 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
+        
+    def test_ldc(self):
+        m = OpCodes()
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [72, 101, 108, 108, 111]
+        m.ldc([0], [str1])
+        self.assertEqual(m.op_stack.pop(), "Hello")
 
     def test_fconst_0(self):
         m = OpCodes()
@@ -390,3 +405,27 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(3.0)
         m.interpret(0x25)
         self.assertEqual(m.op_stack.pop(), np.float32(3.0))
+
+    def test_f2i(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2i()
+        self.assertEqual(np.dtype(m.op_stack.pop()), 'int32')
+
+    def test_f2l(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2l()
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_f2d(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2d()
+        self.assertEqual(m.op_stack.pop(), 0)
+        self.assertEqual(m.op_stack.pop(), 0x3ff00000)
+
+    def test_ret(self):
+        m = OpCodes()
+        self.assertEqual(m.ret(), '')
