@@ -223,9 +223,24 @@ class OpCodes():
     def faload(self):
 
     def fadd(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        np.float32(self.op_stack.append(value1 + value2))
+        value2 = np.float32(self.op_stack.pop())
+        value1 = np.float32(self.op_stack.pop())
+        self.op_stack.append(np.float32(value1) + np.float32(value2))
+
+    def fsub(self):
+        value2 = np.float32(self.op_stack.pop())
+        value1 = np.float32(self.op_stack.pop())
+        self.op_stack.append(np.float32(value1) - np.float32(value2))
+
+    def fmul(self):
+        value2 = np.float32(self.op_stack.pop())
+        value1 = np.float32(self.op_stack.pop())
+        self.op_stack.append(np.float32(value1) * np.float32(value2))
+
+    def fdiv(self):
+        value2 = np.float32(self.op_stack.pop())
+        value1 = np.float32(self.op_stack.pop())
+
 
     def get_str_from_cpool(self, index, c_pool):
 
