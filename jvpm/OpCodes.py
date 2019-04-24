@@ -191,30 +191,30 @@ class OpCodes():
     def fstore(self, operands):
         index = operands.pop()
         if len(self.lva) <= index:
-            self.lva.append(self.op_stack.pop())
+            self.lva.append(np.float32(self.op_stack.pop()))
         else:
-            self.lva[index] = self.op_stack.pop()
+            self.lva[index] = np.float32(self.op_stack.pop())
 
     def fstore_0(self):
-        if len(self.lva) == 0:
-            self.lva.append(self.op_stack.pop())
+        if len(self.lva) == 0.0:
+            self.lva.append(np.float32(self.op_stack.pop()))
         else:
-            self.lva[0] = self.op_stack.pop()
+            self.lva[0] = np.float32(self.op_stack.pop())
 
     def fstore_1(self):
-        if len(self.lva) == 1:
-            self.lva.append(self.op_stack.pop())
+        if len(self.lva) == 1.0:
+            self.lva.append(np.float32(self.op_stack.pop()))
         else:
-            self.lva[1] = self.op_stack.pop()
+            self.lva[1] = np.float32(self.op_stack.pop())
 
     def fstore_2(self):
-        if len(self.lva) == 2:
-            self.lva.append(self.op_stack.pop())
+        if len(self.lva) == 2.0:
+            self.lva.append(np.float32(self.op_stack.pop()))
         else:
-            self.lva[2] = self.op_stack.pop()
+            self.lva[2] = np.float32(self.op_stack.pop())
 
     def fstore_3(self):
-        if len(self.lva) == 3:
+        if len(self.lva) == 3.0:
             self.lva.append(np.float32(self.op_stack.pop()))
         else:
             self.lva[3] = np.float32(self.op_stack.pop())

@@ -272,16 +272,43 @@ class TestOpCodes(unittest.TestCase):
 
     def test_fstore(self):
         m = OpCodes()
-        m.lva.append(0)
-        m.lva.append(1)
-        m.lva.append(2)
-        m.lva.append(3)
-        m.op_stack.append(4)
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.op_stack.append(4.0)
         m.interpret(0x38, [4])
-        self.assertEqual(m.lva[4], 4)
-        m.op_stack.append(5)
+        self.assertEqual(m.lva[4], 4.0)
+        m.op_stack.append(5.0)
         m.interpret(0x38, [4])
-        self.assertEqual(m.lva[4], 5)
+        self.assertEqual(m.lva[4], 5.0)
+
+    def test_fstore_0(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.op_stack.append(1.0)
+        m.interpret(0x43)
+        self.assertEqual(m.lva[0], 1.0)
+        m.op_stack.append(2.0)
+        m.interpret(0x43)
+        self.assertEqual(m.lva[0], 2.0)
+
+    def test_fstore_1(self):
+        m = OpCodes()
+        m.lva.append(1.0)
+        m.op_stack.append(1.0)
+        m.interpret(0x43)
+        self.assertEqual(m.lva[1], 1.0)
+        m.op_stack.append(2.0)
+        m.interpret(0x43)
+        self.assertEqual(m.lva[1], 2.0)
+
+    def test_fadd(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(-0)
+        m.interpret(0x62)
+        self.assertEqual(m.op_stack.pop(), 0)
 
     def test_get_str_from_cpool(self):
         methrefobj = ConstantInfo()
