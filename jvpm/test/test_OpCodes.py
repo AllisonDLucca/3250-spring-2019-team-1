@@ -145,8 +145,7 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(2)
         m.lva.append(3)
         m.lva.append(4)
-        m.op_stack.append(4)
-        m.interpret(0x15)
+        m.interpret(0x15, [4])
         self.assertEqual(m.op_stack.pop(), 4)
 
     def test_iload_0(self):
@@ -186,12 +185,10 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(2)
         m.lva.append(3)
         m.op_stack.append(4)
-        m.op_stack.append(4)
-        m.interpret(0x36)
+        m.interpret(0x36, [4])
         self.assertEqual(m.lva[4], 4)
         m.op_stack.append(5)
-        m.op_stack.append(4)
-        m.interpret(0x36)
+        m.interpret(0x36, [4])
         self.assertEqual(m.lva[4], 5)
 
     def test_istore_0(self):
@@ -272,11 +269,6 @@ class TestOpCodes(unittest.TestCase):
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
 
-    def test_ret(self):
-        m = OpCodes()
-        str = m.ret()
-        self.assertEqual(str, '')
-
     def test_get_str_from_cpool(self):
         methrefobj = ConstantInfo()
         methrefobj.tag = 10
@@ -323,17 +315,13 @@ class TestOpCodes(unittest.TestCase):
         c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
         m = OpCodes()
         m.op_stack.append(5)
-        m.op_stack.append(0)
-        m.op_stack.append(1)
-        m.invokevirtual(c)
+        m.invokevirtual([0, 1], c)
         str1.info = [106, 97, 118, 97, 47, 105, 111, 47, 80, 114, 105, 110, 116, 83, 116, 114, 101, 97, 109]
         str2.info = [112, 114, 105, 110, 116, 108, 110]
         str3.info = [40, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59, 41, 86]
         c = [methrefobj, classobj, nameandtypeobj, str1, str2, str3]
         m.op_stack.append("Hello World!")
-        m.op_stack.append(0)
-        m.op_stack.append(1)
-        m.invokevirtual(c)
+        m.invokevirtual([0, 1], c)
         self.assertEqual(mock_print.mock_calls, [
             call(5),
             call('Hello World!')
@@ -344,9 +332,7 @@ class TestOpCodes(unittest.TestCase):
         const_info = ConstantInfo()
         const_info.tag = 1
         const_info.info = [70, 111, 111]
-        m.op_stack.append(0)
-        m.op_stack.append(0)
-        imp_info = m.getstatic([const_info])
+        imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
 
     def test_ldc(self):
@@ -354,6 +340,5 @@ class TestOpCodes(unittest.TestCase):
         str1 = ConstantInfo()
         str1.tag = 1
         str1.info = [72, 101, 108, 108, 111]
-        m.op_stack.append(0)
-        m.ldc([str1])
+        m.ldc([0], [str1])
         self.assertEqual(m.op_stack.pop(), "Hello")

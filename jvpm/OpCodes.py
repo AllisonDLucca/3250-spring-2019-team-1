@@ -11,15 +11,16 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb1: self.ret, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
-                      0x12: self.ldc}
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc}
 
     def not_implemented(self):
         return 'not implemented'
 
-    def interpret(self, value, constants=None):
-        if constants is not None:
-            return self.table[value](constants)
+    def interpret(self, value, operands=None, constants=None):
+        if operands is not None and constants is not None:
+            return self.table[value](operands, constants)
+        elif operands is not None and constants is None:
+            return self.table[value](operands)
         else:
             return self.table[value]()
 
@@ -112,8 +113,8 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(value1 ^ value2)
 
-    def iload(self):
-        index = self.op_stack.pop()
+    def iload(self, operands):
+        index = operands.pop()
         self.op_stack.append(self.lva[index])
 
     def iload_0(self):
@@ -128,8 +129,8 @@ class OpCodes():
     def iload_3(self):
         self.op_stack.append(self.lva[3])
 
-    def istore(self):
-        index = self.op_stack.pop()
+    def istore(self, operands):
+        index = operands.pop()
         if len(self.lva) <= index:
             self.lva.append(self.op_stack.pop())
         else:
@@ -183,9 +184,6 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
-    def ret(self):
-        return ''
-
     def get_str_from_cpool(self, index, c_pool):
 
         const_ref = c_pool[index]
@@ -208,20 +206,20 @@ class OpCodes():
         else:
             return bytes(const_ref.info).decode("utf-8")
 
-    def invokevirtual(self, c_pool):
-        num1 = self.op_stack.pop()
-        num2 = self.op_stack.pop()
+    def invokevirtual(self, operands, c_pool):
+        num1 = operands.pop()
+        num2 = operands.pop()
         method = self.get_str_from_cpool(num1 + num2 - 1, c_pool)
         if method == 'java/io/PrintStream.println:(I)V':
             print(self.op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(self.op_stack.pop())
 
-    def getstatic(self, c_pool):
-        value1 = self.op_stack.pop()
-        value2 = self.op_stack.pop()
+    def getstatic(self, operands, c_pool):
+        value1 = operands.pop()
+        value2 = operands.pop()
         return self.get_str_from_cpool(value1 + value2, c_pool)
 
-    def ldc(self, c_pool):
-        value = self.op_stack.pop()
+    def ldc(self, operands, c_pool):
+        value = operands.pop()
         self.op_stack.append(self.get_str_from_cpool(value, c_pool))
