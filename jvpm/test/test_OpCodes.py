@@ -463,6 +463,68 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m.op_stack.pop(), -1)
         self.assertEqual(m.op_stack.pop(), -1)
 
+    def test_lushr(self):
+        m = OpCodes()
+        m.op_stack.append(23)  # Testing for positive logical shift right
+        m.op_stack.append(1)
+        m.interpret(0x7d)
+        self.assertEqual(m.op_stack.pop(), 11)
+        m.op_stack.append(-5)  # Testing for negative logical shift right
+        m.op_stack.append(3)
+        m.interpret(0x7d)
+        self.assertEqual(m.op_stack.pop(), 2305843009213693951)
+
+    def test_land(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x7f)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lor(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x81)
+        self.assertEqual(m.op_stack.pop(), 3)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lxor(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x83)
+        self.assertEqual(m.op_stack.pop(), 3)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_l2i(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2i()
+        assert isinstance(m.op_stack.pop(), int)
+
+    def test_l2f(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2f()
+        assert isinstance(m.op_stack.pop(), float)
+
+    def test_l2d(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2d()
+        assert isinstance(m.op_stack.pop(), float)        
+        
     def test_longsplit(self):
         m = OpCodes()
         self.assertEqual((0, -1), m.longsplit(4294967295))

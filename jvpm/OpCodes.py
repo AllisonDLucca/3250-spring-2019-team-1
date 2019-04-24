@@ -22,7 +22,8 @@ class OpCodes():
                       0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
                       0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
                       0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
-                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg}
+                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg, 0x7d: self.lushr,
+                      0x7f: self.land, 0x81: self.lor, 0x83: self.lxor, 0x88: self.l2i, 0x89: self.l2f, 0x8a: self.l2d}
 
     def not_implemented(self):
         return 'not implemented'
@@ -369,6 +370,69 @@ class OpCodes():
         answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
+        
+    def lushr(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        s = value2 & 0x3f
+        if value1 >= 0:
+            self.op_stack.append(value1 >> s)
+        else:
+            self.op_stack.append((value1 + 0x10000000000000000) >> s)
+
+    def land(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op & second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lor(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op | second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lxor(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op ^ second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def l2i(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(int(valuea))
+
+    def l2f(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(float(valuea))
+
+    def l2d(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(float(valuea))
 
     def get_str_from_cpool(self, index, c_pool):
 
@@ -474,3 +538,4 @@ class OpCodes():
 
     def ret(self):
         return ''
+      
