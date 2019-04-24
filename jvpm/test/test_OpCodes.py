@@ -367,9 +367,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x40)
+        self.assertEqual(m.lva[1], 0)
+        self.assertEqual(m.lva[2], 1)
 
     def test_lstore_2(self):
         m = OpCodes()
@@ -377,9 +377,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x41)
+        self.assertEqual(m.lva[2], 0)
+        self.assertEqual(m.lva[3], 1)
 
     def test_lstore_3(self):
         m = OpCodes()
@@ -388,9 +388,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x42)
+        self.assertEqual(m.lva[3], 0)
+        self.assertEqual(m.lva[4], 1)
 
     def test_lstore(self):
         m = OpCodes()
@@ -400,9 +400,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x37, [4])
+        self.assertEqual(m.lva[4], 0)
+        self.assertEqual(m.lva[5], 1)
 
     def test_ladd(self):
         m = OpCodes()
@@ -443,11 +443,6 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x6d)
         self.assertEqual(m.op_stack.pop(), 2)
         self.assertEqual(m.op_stack.pop(), 0)
-        m.op_stack.append(0)
-        m.op_stack.append(6)
-        m.op_stack.append(0)
-        m.op_stack.append(0)
-        self.assertEqual(m.interpret(0x6c), 'Error: Divides by Zero')
 
     def test_lrem(self):
         m = OpCodes()

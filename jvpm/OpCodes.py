@@ -338,13 +338,11 @@ class OpCodes():
         first_op1 = self.op_stack.pop()
         first_op = self.longcomb(first_op1, first_op2)
         second_op = self.longcomb(second_op1, second_op2)
-        try:
-            answer = first_op / second_op
-            answer1, answer2 = self.longsplit(answer)
-            self.op_stack.append(answer1)
-            self.op_stack.append(answer2)
-        except ZeroDivisionError:
-            return 'Error: Divides by Zero'
+        answer = first_op / second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
 
     def lrem(self):
         second_op2 = self.op_stack.pop()
