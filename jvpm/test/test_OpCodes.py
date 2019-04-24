@@ -343,6 +343,14 @@ class TestOpCodes(unittest.TestCase):
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
 
+    def test_ldc(self):
+        m = OpCodes()
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [72, 101, 108, 108, 111]
+        m.ldc([0], [str1])
+        self.assertEqual(m.op_stack.pop(), "Hello")
+
     def test_f2i(self):
         m = OpCodes()
         m.op_stack.append('3f800000')
