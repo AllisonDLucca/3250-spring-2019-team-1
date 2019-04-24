@@ -1,4 +1,6 @@
 import numpy as np
+import struct
+import re
 
 class OpCodes():
     def __init__(self):
@@ -13,7 +15,10 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
+                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret, 0xb: self.fconst_0,
+                      0xc: self.fconst_1, 0xd: self.fconst_2, 0x17: self.fload, 0x22: self.fload_0, 0x23: self.fload_1,
+                      0x24: self.fload_2, 0x25: self.fload_3,
                       0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
                       0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
                       0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
@@ -339,13 +344,11 @@ class OpCodes():
         first_op1 = self.op_stack.pop()
         first_op = self.longcomb(first_op1, first_op2)
         second_op = self.longcomb(second_op1, second_op2)
-        try:
-            answer = first_op / second_op
-            answer1, answer2 = self.longsplit(answer)
-            self.op_stack.append(answer1)
-            self.op_stack.append(answer2)
-        except ZeroDivisionError:
-            return 'Error: Divides by Zero'
+        answer = first_op / second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
 
     def lrem(self):
         second_op2 = self.op_stack.pop()
@@ -367,7 +370,7 @@ class OpCodes():
         answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
-
+        
     def lushr(self):
         value2 = self.op_stack.pop()
         value1 = self.op_stack.pop()
@@ -431,8 +434,6 @@ class OpCodes():
         valuea = self.longcomb(value1, value2)
         self.op_stack.append(float(valuea))
 
-
-
     def get_str_from_cpool(self, index, c_pool):
 
         const_ref = c_pool[index]
@@ -463,11 +464,22 @@ class OpCodes():
             print(self.op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(self.op_stack.pop())
+        elif method == 'java/util/Scanner.nextInt:()I':
+            data = input("Enter a number: ")
+            while re.match(r"[-+]?\d+$", data) is None:
+                print("Invalid input")
+                data = input("Enter a number: ")
+            int1 = int(data)
+            self.op_stack.append(int1)
 
     def getstatic(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        return self.get_str_from_cpool(value1 + value2, c_pool)
+        return self.get_str_from_cpool(value1 + value2 - 1, c_pool)
+
+    def ldc(self, operands, c_pool):
+        value = operands.pop()
+        self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
 
     def longsplit(self, val):    # Splits long in half and returns first and second frag as int32
         val = np.int64(val)
@@ -479,4 +491,51 @@ class OpCodes():
         frag1 = np.int64((0x00000000ffffffff & frag1) << 32)
         frag2 = np.int64(0x00000000ffffffff & frag2)
         return frag1 + frag2
+      
+    def fconst_0(self):
+        self.op_stack.append(np.float32(0.0))
 
+    def fconst_1(self):
+        self.op_stack.append(np.float32(1.0))
+
+    def fconst_2(self):
+        self.op_stack.append(np.float32(2.0))
+
+    def fload(self, operands):
+        index = operands.pop()
+        self.op_stack.append(self.lva[index])
+
+    def fload_0(self):
+        self.op_stack.append(self.lva[0])
+
+    def fload_1(self):
+        self.op_stack.append(self.lva[1])
+
+    def fload_2(self):
+        self.op_stack.append(self.lva[2])
+
+    def fload_3(self):
+        self.op_stack.append(self.lva[3])   
+
+    def f2i(self):
+        value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
+        self.op_stack.append(np.int32(value1))
+
+    def f2l(self):
+        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        value2 = np.right_shift(value1, 32)
+        value3 = np.bitwise_and(value1, 0x00000000FFFFFFFF)
+        self.op_stack.append(np.int32(value2))
+        self.op_stack.append(np.int32(value3))
+
+    def f2d(self):
+        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        hexval = hex(struct.unpack('<Q', struct.pack('<d', value1))[0])
+        value2 = hexval[2:10]
+        value3 = hexval[10:18]
+        self.op_stack.append(int(value2, 16))
+        self.op_stack.append(int(value3, 16))
+
+    def ret(self):
+        return ''
+      

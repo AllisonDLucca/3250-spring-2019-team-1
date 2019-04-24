@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from jvpm.OpCodes import OpCodes
 from jvpm.ClassFile import ConstantInfo
 from unittest.mock import patch, call
@@ -367,9 +368,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x40)
+        self.assertEqual(m.lva[1], 0)
+        self.assertEqual(m.lva[2], 1)
 
     def test_lstore_2(self):
         m = OpCodes()
@@ -377,9 +378,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x41)
+        self.assertEqual(m.lva[2], 0)
+        self.assertEqual(m.lva[3], 1)
 
     def test_lstore_3(self):
         m = OpCodes()
@@ -388,9 +389,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x42)
+        self.assertEqual(m.lva[3], 0)
+        self.assertEqual(m.lva[4], 1)
 
     def test_lstore(self):
         m = OpCodes()
@@ -400,9 +401,9 @@ class TestOpCodes(unittest.TestCase):
         m.lva.append(0)
         m.op_stack.append(0)
         m.op_stack.append(1)
-        m.interpret(0x3f)
-        self.assertEqual(m.lva[0], 0)
-        self.assertEqual(m.lva[1], 1)
+        m.interpret(0x37, [4])
+        self.assertEqual(m.lva[4], 0)
+        self.assertEqual(m.lva[5], 1)
 
     def test_ladd(self):
         m = OpCodes()
@@ -443,11 +444,6 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x6d)
         self.assertEqual(m.op_stack.pop(), 2)
         self.assertEqual(m.op_stack.pop(), 0)
-        m.op_stack.append(0)
-        m.op_stack.append(6)
-        m.op_stack.append(0)
-        m.op_stack.append(0)
-        self.assertEqual(m.interpret(0x6c), 'Error: Divides by Zero')
 
     def test_lrem(self):
         m = OpCodes()
@@ -527,8 +523,8 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(0)
         m.op_stack.append(2)
         m.l2d()
-        assert isinstance(m.op_stack.pop(), float)
-
+        assert isinstance(m.op_stack.pop(), float)        
+        
     def test_longsplit(self):
         m = OpCodes()
         self.assertEqual((0, -1), m.longsplit(4294967295))
@@ -573,6 +569,13 @@ class TestOpCodes(unittest.TestCase):
             call(5),
             call('Hello World!')
         ])
+        with patch('builtins.input', return_value='5'):
+            str1.info = [110, 101, 120, 116, 73, 110, 116, 58, 40, 41, 73]
+            str2.info = [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 83, 99, 97, 110, 110, 101, 114]
+            c = [methrefobj, classobj, str1, str2]
+            m.invokevirtual([0, 1], c)
+            m.op_stack.append(5)
+            self.assertEqual(m.op_stack.pop(), 5)
 
     def test_getstatic(self):
         m = OpCodes()
@@ -581,3 +584,90 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
+        
+    def test_ldc(self):
+        m = OpCodes()
+        str1 = ConstantInfo()
+        str1.tag = 1
+        str1.info = [72, 101, 108, 108, 111]
+        m.ldc([0], [str1])
+        self.assertEqual(m.op_stack.pop(), "Hello")
+
+    def test_fconst_0(self):
+        m = OpCodes()
+        m.interpret(0xb)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fconst_1(self):
+        m = OpCodes()
+        m.interpret(0xc)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fconst_2(self):
+        m = OpCodes()
+        m.interpret(0xd)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.lva.append(4.0)
+        m.interpret(0x17, [4])
+        self.assertEqual(m.op_stack.pop(), 4)
+
+    def test_fload_0(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.interpret(0x22)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fload_1(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.interpret(0x23)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fload_2(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.interpret(0x24)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload_3(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.interpret(0x25)
+        self.assertEqual(m.op_stack.pop(), np.float32(3.0))
+
+    def test_f2i(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2i()
+        self.assertEqual(np.dtype(m.op_stack.pop()), 'int32')
+
+    def test_f2l(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2l()
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_f2d(self):
+        m = OpCodes()
+        m.op_stack.append('3f800000')
+        m.f2d()
+        self.assertEqual(m.op_stack.pop(), 0)
+        self.assertEqual(m.op_stack.pop(), 0x3ff00000)
+
+    def test_ret(self):
+        m = OpCodes()
+        self.assertEqual(m.ret(), '')
