@@ -192,6 +192,15 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x36, [4])
         self.assertEqual(m.lva[4], 5)
 
+    def test_fstore(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.lva.append(3)
+        m.op_stack.append(4)
+
+
     def test_istore_0(self):
         m = OpCodes()
         m.op_stack.append(0)

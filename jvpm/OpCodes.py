@@ -1,8 +1,3 @@
-import numpy as np
-import struct
-import re
-
-
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -16,9 +11,8 @@ class OpCodes():
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
-                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret}
-
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x38: self.fstore,
+                      0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2, 0x46: self.fstore_3}
 
     def not_implemented(self):
         return 'not implemented'
@@ -191,6 +185,37 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
+    def fstore(self, operands):
+        index = operands.pop()
+        if len(self.lva) <= index:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[index] = self.op_stack.pop()
+
+    def fstore0(self):
+        if len(self.lva) == 0:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[0] = self.op_stack.pop()
+
+    def fstore1(self):
+        if len(self.lva) == 1:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[0] = self.op_stack.pop()
+
+    def fstore2(self):
+        if len(self.lva) == 2:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[0] = self.op_stack.pop()
+
+    def fstore3(self):
+        if len(self.lva) == 3:
+            self.lva.append(self.op_stack.pop())
+        else:
+            self.lva[0] = self.op_stack.pop()
+
     def get_str_from_cpool(self, index, c_pool):
 
         const_ref = c_pool[index]
@@ -221,41 +246,8 @@ class OpCodes():
             print(self.op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
             print(self.op_stack.pop())
-        elif method == 'java/util/Scanner.nextInt:()I':
-            data = input("Enter a number: ")
-            while re.match(r"[-+]?\d+$", data) is None:
-                print("Invalid input")
-                data = input("Enter a number: ")
-            int1 = int(data)
-            self.op_stack.append(int1)
 
     def getstatic(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        return self.get_str_from_cpool(value1 + value2 - 1, c_pool)
-
-    def ldc(self, operands, c_pool):
-        value = operands.pop()
-        self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
-
-    def f2i(self):
-        value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
-        self.op_stack.append(np.int32(value1))
-
-    def f2l(self):
-        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
-        value2 = np.right_shift(value1, 32)
-        value3 = np.bitwise_and(value1, 0x00000000FFFFFFFF)
-        self.op_stack.append(np.int32(value2))
-        self.op_stack.append(np.int32(value3))
-
-    def f2d(self):
-        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
-        hexval = hex(struct.unpack('<Q', struct.pack('<d', value1))[0])
-        value2 = hexval[2:10]
-        value3 = hexval[10:18]
-        self.op_stack.append(int(value2, 16))
-        self.op_stack.append(int(value3, 16))
-
-    def ret(self):
-        return ''
+        return self.get_str_from_cpool(value1 + value2, c_pool)
