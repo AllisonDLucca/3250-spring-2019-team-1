@@ -326,6 +326,13 @@ class TestOpCodes(unittest.TestCase):
             call(5),
             call('Hello World!')
         ])
+        with patch('builtins.input', return_value='5'):
+            str1.info = [110, 101, 120, 116, 73, 110, 116, 58, 40, 41, 73]
+            str2.info = [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 83, 99, 97, 110, 110, 101, 114]
+            c = [methrefobj, classobj, str1, str2]
+            m.invokevirtual([0, 1], c)
+            m.op_stack.append(5)
+            self.assertEqual(m.op_stack.pop(), 5)
 
     def test_getstatic(self):
         m = OpCodes()
