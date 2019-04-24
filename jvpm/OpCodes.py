@@ -2,7 +2,6 @@ import numpy as np
 import struct
 import re
 
-
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -17,8 +16,9 @@ class OpCodes():
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
-                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret}
-
+                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret, 0xb: self.fconst_0,
+                      0xc: self.fconst_1, 0xd: self.fconst_2, 0x17: self.fload, 0x22: self.fload_0, 0x23: self.fload_1,
+                      0x24: self.fload_2, 0x25: self.fload_3}
 
     def not_implemented(self):
         return 'not implemented'
@@ -237,6 +237,31 @@ class OpCodes():
     def ldc(self, operands, c_pool):
         value = operands.pop()
         self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
+
+    def fconst_0(self):
+        self.op_stack.append(np.float32(0.0))
+
+    def fconst_1(self):
+        self.op_stack.append(np.float32(1.0))
+
+    def fconst_2(self):
+        self.op_stack.append(np.float32(2.0))
+
+    def fload(self, operands):
+        index = operands.pop()
+        self.op_stack.append(self.lva[index])
+
+    def fload_0(self):
+        self.op_stack.append(self.lva[0])
+
+    def fload_1(self):
+        self.op_stack.append(self.lva[1])
+
+    def fload_2(self):
+        self.op_stack.append(self.lva[2])
+
+    def fload_3(self):
+        self.op_stack.append(self.lva[3])   
 
     def f2i(self):
         value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]

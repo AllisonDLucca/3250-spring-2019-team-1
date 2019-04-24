@@ -342,7 +342,7 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
-
+        
     def test_ldc(self):
         m = OpCodes()
         str1 = ConstantInfo()
@@ -350,6 +350,61 @@ class TestOpCodes(unittest.TestCase):
         str1.info = [72, 101, 108, 108, 111]
         m.ldc([0], [str1])
         self.assertEqual(m.op_stack.pop(), "Hello")
+
+    def test_fconst_0(self):
+        m = OpCodes()
+        m.interpret(0xb)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fconst_1(self):
+        m = OpCodes()
+        m.interpret(0xc)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fconst_2(self):
+        m = OpCodes()
+        m.interpret(0xd)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.lva.append(4.0)
+        m.interpret(0x17, [4])
+        self.assertEqual(m.op_stack.pop(), 4)
+
+    def test_fload_0(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.interpret(0x22)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fload_1(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.interpret(0x23)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fload_2(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.interpret(0x24)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload_3(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.interpret(0x25)
+        self.assertEqual(m.op_stack.pop(), np.float32(3.0))
 
     def test_f2i(self):
         m = OpCodes()

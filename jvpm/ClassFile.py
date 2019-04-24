@@ -154,7 +154,7 @@ class ClassFile():
         while i < len(self.attribute_table):
             while j < len(self.attribute_table[i].code):
                 value = self.attribute_table[i].code[j]
-                if value == 54 or value == 21:
+                if value == 54 or value == 21 or value == 0x17:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
                 elif value == 0x12:
