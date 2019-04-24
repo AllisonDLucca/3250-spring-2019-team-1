@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -12,7 +15,8 @@ class OpCodes():
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x38: self.fstore,
-                      0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2, 0x46: self.fstore_3}
+                      0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2, 0x46: self.fstore_3,
+                      0x30: self.faload, 0x62: fadd}
 
     def not_implemented(self):
         return 'not implemented'
@@ -202,19 +206,26 @@ class OpCodes():
         if len(self.lva) == 1:
             self.lva.append(self.op_stack.pop())
         else:
-            self.lva[0] = self.op_stack.pop()
+            self.lva[1] = self.op_stack.pop()
 
     def fstore2(self):
         if len(self.lva) == 2:
             self.lva.append(self.op_stack.pop())
         else:
-            self.lva[0] = self.op_stack.pop()
+            self.lva[2] = self.op_stack.pop()
 
     def fstore3(self):
         if len(self.lva) == 3:
             self.lva.append(self.op_stack.pop())
         else:
-            self.lva[0] = self.op_stack.pop()
+            self.lva[3] = self.op_stack.pop()
+
+    def faload(self):
+
+    def fadd(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        np.float32(self.op_stack.append(value1 + value2))
 
     def get_str_from_cpool(self, index, c_pool):
 
