@@ -14,7 +14,7 @@ class OpCodes():
                       0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d,
                       0x86: self.i2f, 0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
                       0x38: self.fstore, 0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2,
-                      0x46: self.fstore_3, 0x30: self.faload, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
+                      0x46: self.fstore_3, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
                       0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg}
 
     def not_implemented(self):
@@ -218,10 +218,6 @@ class OpCodes():
             self.lva.append(np.float32(self.op_stack.pop()))
         else:
             self.lva[3] = np.float32(self.op_stack.pop())
-
-    # def faload(self):
-    #    arrayRef = self.op_stack.pop()
-    #   index = self.op_stack.pop()
 
     def fadd(self):
         value2 = np.float32(self.op_stack.pop())

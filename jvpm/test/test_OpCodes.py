@@ -192,15 +192,6 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x36, [4])
         self.assertEqual(m.lva[4], 5)
 
-    def test_fstore(self):
-        m = OpCodes()
-        m.lva.append(0)
-        m.lva.append(1)
-        m.lva.append(2)
-        m.lva.append(3)
-        m.op_stack.append(4)
-
-
     def test_istore_0(self):
         m = OpCodes()
         m.op_stack.append(0)
@@ -278,6 +269,19 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(4)
         m.i2s()
         assert isinstance(m.op_stack.pop(), int)
+
+    def test_fstore(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.lva.append(3)
+        m.op_stack.append(4)
+        m.interpret(0x38, [4])
+        self.assertEqual(m.lva[4], 4)
+        m.op_stack.append(5)
+        m.interpret(0x38, [4])
+        self.assertEqual(m.lva[4], 5)
 
     def test_get_str_from_cpool(self):
         methrefobj = ConstantInfo()
