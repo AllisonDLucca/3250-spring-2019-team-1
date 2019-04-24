@@ -16,7 +16,8 @@ class OpCodes():
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x38: self.fstore,
                       0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2, 0x46: self.fstore_3,
-                      0x30: self.faload, 0x62: fadd}
+                      0x30: self.faload, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul, 0x6e: self.fdiv,
+                      0x72: self.frem, 0x76: self.fneg}
 
     def not_implemented(self):
         return 'not implemented'
@@ -196,51 +197,67 @@ class OpCodes():
         else:
             self.lva[index] = self.op_stack.pop()
 
-    def fstore0(self):
+    def fstore_0(self):
         if len(self.lva) == 0:
             self.lva.append(self.op_stack.pop())
         else:
             self.lva[0] = self.op_stack.pop()
 
-    def fstore1(self):
+    def fstore_1(self):
         if len(self.lva) == 1:
             self.lva.append(self.op_stack.pop())
         else:
             self.lva[1] = self.op_stack.pop()
 
-    def fstore2(self):
+    def fstore_2(self):
         if len(self.lva) == 2:
             self.lva.append(self.op_stack.pop())
         else:
             self.lva[2] = self.op_stack.pop()
 
-    def fstore3(self):
+    def fstore_3(self):
         if len(self.lva) == 3:
             self.lva.append(self.op_stack.pop())
         else:
             self.lva[3] = self.op_stack.pop()
 
     def faload(self):
+        value = 0.0
 
     def fadd(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1) + np.float32(value2))
+        self.op_stack.append(np.float32(value1 + value2))
 
     def fsub(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1) - np.float32(value2))
+        self.op_stack.append(np.float32(value1 - value2))
 
     def fmul(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1) * np.float32(value2))
+        self.op_stack.append(np.float32(value1 * value2))
 
     def fdiv(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
+        try:
+            self.op_stack.append(np.float32(value1 / value2))
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
 
+    def frem(self):
+        value2 = np.float32(self.op_stack.pop())
+        value1 = np.float32(self.op_stack.pop())
+        try:
+            self.op_stack.append(np.float32(value1 % value2))
+        except ZeroDivisionError:
+            return 'Error: Divides by Zero'
+
+    def fneg(self):
+        value = np.float32(self.op_stack.pop())
+        self.op_stack.append(np.float32(- value))
 
     def get_str_from_cpool(self, index, c_pool):
 
