@@ -165,7 +165,7 @@ class ClassFile():
                     ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
-                print("stack: ", ops.op_stack)
+                #print("stack: ", ops.op_stack)
                 #print("array: ", ops.lva)
                 j += 1
             i += 1
