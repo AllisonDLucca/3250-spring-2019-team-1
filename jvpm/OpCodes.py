@@ -1,4 +1,5 @@
 import numpy as np
+import struct
 
 class OpCodes():
     def __init__(self):
@@ -10,11 +11,9 @@ class OpCodes():
                       0x80: self.ior, 0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub,
                       0x7c: self.iushr, 0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
                       0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
-                      0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c, 0x87: self.i2d,
-                      0x86: self.i2f, 0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic,
                       0x38: self.fstore, 0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2,
                       0x46: self.fstore_3, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
-                      0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg}
+                      0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg,
                       0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
                       0x87: self.i2d, 0x86: self.i2f,
                       0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
