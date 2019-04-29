@@ -397,6 +397,248 @@ class TestOpCodes(unittest.TestCase):
         m = OpCodes()
         self.assertEqual(m.get_str_from_cpool(0, c), 'A.B:C')
 
+    def test_lload_0(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x1e)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lload_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x1f)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lload_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x20)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lload_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x21)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lload(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(1)
+        m.lva.append(2)
+        m.lva.append(3)
+        m.lva.append(0)
+        m.lva.append(1)
+        m.interpret(0x16, [4])
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lconst_0(self):
+        m = OpCodes()
+        m.interpret(0x9)
+        self.assertEqual(0, m.op_stack.pop())
+        self.assertEqual(0, m.op_stack.pop())
+
+    def test_lconst_1(self):
+        m = OpCodes()
+        m.interpret(0xa)
+        self.assertEqual(1, m.op_stack.pop())
+        self.assertEqual(0, m.op_stack.pop())
+
+    def test_lstore_0(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x3f)
+        self.assertEqual(m.lva[0], 0)
+        self.assertEqual(m.lva[1], 1)
+
+    def test_lstore_1(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x40)
+        self.assertEqual(m.lva[1], 0)
+        self.assertEqual(m.lva[2], 1)
+
+    def test_lstore_2(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x41)
+        self.assertEqual(m.lva[2], 0)
+        self.assertEqual(m.lva[3], 1)
+
+    def test_lstore_3(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x42)
+        self.assertEqual(m.lva[3], 0)
+        self.assertEqual(m.lva[4], 1)
+
+    def test_lstore(self):
+        m = OpCodes()
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.lva.append(0)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x37, [4])
+        self.assertEqual(m.lva[4], 0)
+        self.assertEqual(m.lva[5], 1)
+
+    def test_ladd(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x61)
+        self.assertEqual(m.op_stack.pop(), 3)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lsub(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x65)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lmul(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(3)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x69)
+        self.assertEqual(m.op_stack.pop(), 6)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_ldiv(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(6)
+        m.op_stack.append(0)
+        m.op_stack.append(3)
+        m.interpret(0x6d)
+        self.assertEqual(m.op_stack.pop(), 2)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lrem(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(7)
+        m.op_stack.append(0)
+        m.op_stack.append(3)
+        m.interpret(0x71)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lneg(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x75)
+        self.assertEqual(m.op_stack.pop(), -1)
+        self.assertEqual(m.op_stack.pop(), -1)
+
+    def test_lushr(self):
+        m = OpCodes()
+        m.op_stack.append(23)  # Testing for positive logical shift right
+        m.op_stack.append(1)
+        m.interpret(0x7d)
+        self.assertEqual(m.op_stack.pop(), 11)
+        m.op_stack.append(-5)  # Testing for negative logical shift right
+        m.op_stack.append(3)
+        m.interpret(0x7d)
+        self.assertEqual(m.op_stack.pop(), 2305843009213693951)
+
+    def test_land(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.interpret(0x7f)
+        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lor(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x81)
+        self.assertEqual(m.op_stack.pop(), 3)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_lxor(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(1)
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.interpret(0x83)
+        self.assertEqual(m.op_stack.pop(), 3)
+        self.assertEqual(m.op_stack.pop(), 0)
+
+    def test_l2i(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2i()
+        assert isinstance(m.op_stack.pop(), int)
+
+    def test_l2f(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2f()
+        assert isinstance(m.op_stack.pop(), float)
+
+    def test_l2d(self):
+        m = OpCodes()
+        m.op_stack.append(0)
+        m.op_stack.append(2)
+        m.l2d()
+        assert isinstance(m.op_stack.pop(), float)        
+        
+    def test_longsplit(self):
+        m = OpCodes()
+        self.assertEqual((0, -1), m.longsplit(4294967295))
+        self.assertEqual((1, 0), m.longsplit(4294967296))
+
+    def test_longcomb(self):
+        m = OpCodes()
+        self.assertEqual(4294967295, m.longcomb(0, -1))
+        self.assertEqual(4294967296, m.longcomb(1, 0))
+
     @patch('builtins.print')
     def test_invokevirtual(self, mock_print):
         methrefobj = ConstantInfo()
@@ -446,7 +688,7 @@ class TestOpCodes(unittest.TestCase):
         const_info.info = [70, 111, 111]
         imp_info = m.getstatic([0, 0], [const_info])
         assert isinstance(imp_info, str)
-
+        
     def test_ldc(self):
         m = OpCodes()
         str1 = ConstantInfo()
@@ -454,6 +696,61 @@ class TestOpCodes(unittest.TestCase):
         str1.info = [72, 101, 108, 108, 111]
         m.ldc([0], [str1])
         self.assertEqual(m.op_stack.pop(), "Hello")
+
+    def test_fconst_0(self):
+        m = OpCodes()
+        m.interpret(0xb)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fconst_1(self):
+        m = OpCodes()
+        m.interpret(0xc)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fconst_2(self):
+        m = OpCodes()
+        m.interpret(0xd)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.lva.append(4.0)
+        m.interpret(0x17, [4])
+        self.assertEqual(m.op_stack.pop(), 4)
+
+    def test_fload_0(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.interpret(0x22)
+        self.assertEqual(m.op_stack.pop(), np.float32(0.0))
+
+    def test_fload_1(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.interpret(0x23)
+        self.assertEqual(m.op_stack.pop(), np.float32(1.0))
+
+    def test_fload_2(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.interpret(0x24)
+        self.assertEqual(m.op_stack.pop(), np.float32(2.0))
+
+    def test_fload_3(self):
+        m = OpCodes()
+        m.lva.append(0.0)
+        m.lva.append(1.0)
+        m.lva.append(2.0)
+        m.lva.append(3.0)
+        m.interpret(0x25)
+        self.assertEqual(m.op_stack.pop(), np.float32(3.0))
 
     def test_f2i(self):
         m = OpCodes()

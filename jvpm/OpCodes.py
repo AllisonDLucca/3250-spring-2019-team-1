@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class OpCodes():
     def __init__(self):
         self.op_stack = []  # operand stack for the opcodes
@@ -16,6 +15,17 @@ class OpCodes():
                       0x38: self.fstore, 0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2,
                       0x46: self.fstore_3, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
                       0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg}
+                      0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
+                      0x87: self.i2d, 0x86: self.i2f,
+                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
+                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret, 0xb: self.fconst_0,
+                      0xc: self.fconst_1, 0xd: self.fconst_2, 0x17: self.fload, 0x22: self.fload_0, 0x23: self.fload_1,
+                      0x24: self.fload_2, 0x25: self.fload_3,
+                      0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
+                      0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
+                      0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
+                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg, 0x7d: self.lushr,
+                      0x7f: self.land, 0x81: self.lor, 0x83: self.lxor, 0x88: self.l2i, 0x89: self.l2f, 0x8a: self.l2d}
 
     def not_implemented(self):
         return 'not implemented'
@@ -188,6 +198,244 @@ class OpCodes():
         value1 = self.op_stack.pop()
         self.op_stack.append(int(value1))
 
+    def lload_0(self):
+        frag1 = self.lva[0]
+        frag2 = self.lva[1]
+        self.op_stack.append(frag1)
+        self.op_stack.append(frag2)
+
+    def lload_1(self):
+        frag1 = self.lva[1]
+        frag2 = self.lva[2]
+        self.op_stack.append(frag1)
+        self.op_stack.append(frag2)
+
+    def lload_2(self):
+        frag1 = self.lva[2]
+        frag2 = self.lva[3]
+        self.op_stack.append(frag1)
+        self.op_stack.append(frag2)
+
+    def lload_3(self):
+        frag1 = self.lva[3]
+        frag2 = self.lva[4]
+        self.op_stack.append(frag1)
+        self.op_stack.append(frag2)
+
+    def lload(self, operands):
+        index = operands.pop()
+        frag1 = self.lva[index]
+        frag2 = self.lva[index+1]
+        self.op_stack.append(frag1)
+        self.op_stack.append(frag2)
+
+    def lconst_0(self):
+        self.op_stack.append(0)
+        self.op_stack.append(0)
+
+    def lconst_1(self):
+        self.op_stack.append(0)
+        self.op_stack.append(1)
+
+    def lstore_0(self):
+        frag2 = self.op_stack.pop()
+        frag1 = self.op_stack.pop()
+        if len(self.lva) == 0:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[0] = frag1
+            if len(self.lva) == 1:
+                self.lva.append(frag2)
+            else:
+                self.lva[1] = frag2
+
+    def lstore_1(self):
+        frag2 = self.op_stack.pop()
+        frag1 = self.op_stack.pop()
+        if len(self.lva) == 1:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[1] = frag1
+            if len(self.lva) == 2:
+                self.lva.append(frag2)
+            else:
+                self.lva[2] = frag2
+
+    def lstore_2(self):
+        frag2 = self.op_stack.pop()
+        frag1 = self.op_stack.pop()
+        if len(self.lva) == 2:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[2] = frag1
+            if len(self.lva) == 3:
+                self.lva.append(frag2)
+            else:
+                self.lva[3] = frag2
+
+    def lstore_3(self):
+        frag2 = self.op_stack.pop()
+        frag1 = self.op_stack.pop()
+        if len(self.lva) == 3:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[3] = frag1
+            if len(self.lva) == 4:
+                self.lva.append(frag2)
+            else:
+                self.lva[4] = frag2
+
+    def lstore(self, operands):
+        index = operands.pop()
+        frag2 = self.op_stack.pop()
+        frag1 = self.op_stack.pop()
+        if len(self.lva) == index:
+            self.lva.append(frag1)
+            self.lva.append(frag2)
+        else:
+            self.lva[index] = frag1
+            if len(self.lva) == index + 1:
+                self.lva.append(frag2)
+            else:
+                self.lva[index + 1] = frag2
+
+    def ladd(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op + second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lsub(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op - second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lmul(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op * second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def ldiv(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op / second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+
+    def lrem(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op % second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lneg(self):
+        val2 = self.op_stack.pop()
+        val1 = self.op_stack.pop()
+        val = self.longcomb(val1, val2)
+        answer = val * -1
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lushr(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        s = value2 & 0x3f
+        if value1 >= 0:
+            self.op_stack.append(value1 >> s)
+        else:
+            self.op_stack.append((value1 + 0x10000000000000000) >> s)
+
+    def land(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op & second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lor(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op | second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def lxor(self):
+        second_op2 = self.op_stack.pop()
+        second_op1 = self.op_stack.pop()
+        first_op2 = self.op_stack.pop()
+        first_op1 = self.op_stack.pop()
+        first_op = self.longcomb(first_op1, first_op2)
+        second_op = self.longcomb(second_op1, second_op2)
+        answer = first_op ^ second_op
+        answer1, answer2 = self.longsplit(answer)
+        self.op_stack.append(answer1)
+        self.op_stack.append(answer2)
+
+    def l2i(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(int(valuea))
+
+    def l2f(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(float(valuea))
+
+    def l2d(self):
+        value2 = self.op_stack.pop()
+        value1 = self.op_stack.pop()
+        valuea = self.longcomb(value1, value2)
+        self.op_stack.append(float(valuea))
+
     def fstore(self, operands):
         index = operands.pop()
         if len(self.lva) <= index:
@@ -288,4 +536,66 @@ class OpCodes():
     def getstatic(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        return self.get_str_from_cpool(value1 + value2, c_pool)
+        return self.get_str_from_cpool(value1 + value2 - 1, c_pool)
+
+    def ldc(self, operands, c_pool):
+        value = operands.pop()
+        self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
+
+    def longsplit(self, val):    # Splits long in half and returns first and second frag as int32
+        val = np.int64(val)
+        frag2 = np.int32(val & 0x00000000ffffffff)
+        frag1 = np.int32((val >> 32) & 0x00000000ffffffff)
+        return frag1, frag2
+
+    def longcomb(self, frag1, frag2):   # Takes two fragments and combines them, returning a 64 bit int
+        frag1 = np.int64((0x00000000ffffffff & frag1) << 32)
+        frag2 = np.int64(0x00000000ffffffff & frag2)
+        return frag1 + frag2
+
+    def fconst_0(self):
+        self.op_stack.append(np.float32(0.0))
+
+    def fconst_1(self):
+        self.op_stack.append(np.float32(1.0))
+
+    def fconst_2(self):
+        self.op_stack.append(np.float32(2.0))
+
+    def fload(self, operands):
+        index = operands.pop()
+        self.op_stack.append(self.lva[index])
+
+    def fload_0(self):
+        self.op_stack.append(self.lva[0])
+
+    def fload_1(self):
+        self.op_stack.append(self.lva[1])
+
+    def fload_2(self):
+        self.op_stack.append(self.lva[2])
+
+    def fload_3(self):
+        self.op_stack.append(self.lva[3])
+
+    def f2i(self):
+        value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
+        self.op_stack.append(np.int32(value1))
+
+    def f2l(self):
+        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        value2 = np.right_shift(value1, 32)
+        value3 = np.bitwise_and(value1, 0x00000000FFFFFFFF)
+        self.op_stack.append(np.int32(value2))
+        self.op_stack.append(np.int32(value3))
+
+    def f2d(self):
+        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+        hexval = hex(struct.unpack('<Q', struct.pack('<d', value1))[0])
+        value2 = hexval[2:10]
+        value3 = hexval[10:18]
+        self.op_stack.append(int(value2, 16))
+        self.op_stack.append(int(value3, 16))
+
+    def ret(self):
+        return ''
