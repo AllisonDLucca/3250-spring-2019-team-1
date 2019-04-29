@@ -368,7 +368,11 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x72)
         self.assertEqual(m.op_stack.pop(), 'Error: Divides by Zero')
 
-
+    def test_fneg(self):
+        m = OpCodes()
+        m.op_stack.append(np.float32(3.0))
+        m.interpret(0x76)
+        self.assertEqual(m.op_stack.pop(), np.float(-3.0))
 
     def test_get_str_from_cpool(self):
         methrefobj = ConstantInfo()
