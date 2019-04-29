@@ -359,8 +359,8 @@ class TestOpCodes(unittest.TestCase):
 
     def test_frem(self):
         m = OpCodes()
-        m.op_stack.append(np.float32(2.0))
         m.op_stack.append(np.float32(3.0))
+        m.op_stack.append(np.float32(2.0))
         m.interpret(0x72)
         self.assertEqual(m.op_stack.pop(), np.float32(1.0))
         m.op_stack.append(np.float32(0.0))
