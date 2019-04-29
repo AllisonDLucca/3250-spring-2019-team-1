@@ -17,7 +17,7 @@ class OpCodes():
                       0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
                       0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
                       0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
-                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg}
+                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg, 0x79: self.lshl, 0x7d: self.lshr}
 
     def not_implemented(self):
         return 'not implemented'
@@ -364,6 +364,20 @@ class OpCodes():
         answer1, answer2 = self.longsplit(answer)
         self.op_stack.append(answer1)
         self.op_stack.append(answer2)
+
+    def lshl(self):
+        second_op = self.op_stack.pop()
+        first_op = self.op_stack.pop()
+        answer = first_op << second_op
+        self.op_stack.append(answer)
+
+    def lshr(self):
+        second_op = self.op_stack.pop()
+        first_op = self.op_stack.pop()
+        answer = first_op >> second_op
+        self.op_stack.append(answer)
+
+        
 
     def get_str_from_cpool(self, index, c_pool):
 
