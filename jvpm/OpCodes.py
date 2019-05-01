@@ -4,443 +4,451 @@ import re
 
 class OpCodes():
     def __init__(self):
-        self.op_stack = []  # operand stack for the opcodes
-        self.lva = []  # local variable array initialized
-        self.table = {0x00: self.not_implemented, 0x02: self.iconst_m1, 0x03: self.iconst_0, 0x04: self.iconst_1,
-                      0x05: self.iconst_2, 0x06: self.iconst_3,
-                      0x07: self.iconst_4, 0x08: self.iconst_5, 0x60: self.iadd, 0x7e: self.iand, 0x6c: self.idiv,
-                      0x68: self.imul, 0x74: self.ineg, 0x80: self.ior,
-                      0x70: self.irem, 0x78: self.ishl, 0x7a: self.ishr, 0x64: self.isub, 0x7c: self.iushr,
-                      0x82: self.ixor, 0x15: self.iload, 0x1a: self.iload_0, 0x1b: self.iload_1,
-                      0x1c: self.iload_2, 0x1d: self.iload_3, 0x36: self.istore, 0x3b: self.istore_0,
-                      0x3c: self.istore_1, 0x3d: self.istore_2, 0x3e: self.istore_3, 0x91: self.i2b, 0x92: self.i2c,
-                      0x87: self.i2d, 0x86: self.i2f,
-                      0x85: self.i2l, 0x93: self.i2s, 0xb6: self.invokevirtual, 0xb2: self.getstatic, 0x12: self.ldc,
-                      0x8b: self.f2i, 0x8c: self.f2l, 0x8d: self.f2d, 0xb1: self.ret, 0xb: self.fconst_0,
-                      0xc: self.fconst_1, 0xd: self.fconst_2, 0x17: self.fload, 0x22: self.fload_0, 0x23: self.fload_1,
-                      0x24: self.fload_2, 0x25: self.fload_3,
-                      0x1e: self.lload_0, 0x1f: self.lload_1, 0x20:self.lload_2, 0x21:self.lload_3, 0x16:self.lload,
-                      0x9: self.lconst_0, 0xa: self.lconst_1, 0x3f: self.lstore_0, 0x40: self.lstore_1,
-                      0x41: self.lstore_2, 0x42: self.lstore_3, 0x37: self.lstore, 0x61: self.ladd, 0x65: self.lsub,
-                      0x69: self.lmul, 0x6d: self.ldiv, 0x71: self.lrem, 0x75: self.lneg, 0x7d: self.lushr,
-                      0x7f: self.land, 0x81: self.lor, 0x83: self.lxor, 0x88: self.l2i, 0x89: self.l2f, 0x8a: self.l2d}
+        self._op_stack = []  # operand stack for the opcodes
+        self._lva = []  # local variable array initialized
+        self._table = {0x00: self._not_implemented, 0x02: self._iconst_m1, 0x03: self._iconst_0, 0x04: self._iconst_1,
+                      0x05: self._iconst_2, 0x06: self._iconst_3,
+                      0x07: self._iconst_4, 0x08: self._iconst_5, 0x60: self._iadd, 0x7e: self._iand, 0x6c: self._idiv,
+                      0x68: self._imul, 0x74: self._ineg, 0x80: self._ior,
+                      0x70: self._irem, 0x78: self._ishl, 0x7a: self._ishr, 0x64: self._isub, 0x7c: self._iushr,
+                      0x82: self._ixor, 0x15: self._iload, 0x1a: self._iload_0, 0x1b: self._iload_1,
+                      0x1c: self._iload_2, 0x1d: self._iload_3, 0x36: self._istore, 0x3b: self._istore_0,
+                      0x3c: self._istore_1, 0x3d: self._istore_2, 0x3e: self._istore_3, 0x91: self._i2b, 0x92: self._i2c,
+                      0x87: self._i2d, 0x86: self._i2f,
+                      0x85: self._i2l, 0x93: self._i2s, 0xb6: self._invokevirtual, 0xb2: self._getstatic, 0x12: self._ldc,
+                      0x8b: self._f2i, 0x8c: self._f2l, 0x8d: self._f2d, 0xb1: self._ret, 0xb: self._fconst_0,
+                      0xc: self._fconst_1, 0xd: self._fconst_2, 0x17: self._fload, 0x22: self._fload_0, 0x23: self._fload_1,
+                      0x24: self._fload_2, 0x25: self._fload_3,
+                      0x1e: self._lload_0, 0x1f: self._lload_1, 0x20:self._lload_2, 0x21:self._lload_3, 0x16:self._lload,
+                      0x9: self._lconst_0, 0xa: self._lconst_1, 0x3f: self._lstore_0, 0x40: self._lstore_1,
+                      0x41: self._lstore_2, 0x42: self._lstore_3, 0x37: self._lstore, 0x61: self._ladd, 0x65: self._lsub,
+                      0x69: self._lmul, 0x6d: self._ldiv, 0x71: self._lrem, 0x75: self._lneg, 0x7d: self._lushr,
+                      0x7f: self._land, 0x81: self._lor, 0x83: self._lxor, 0x88: self._l2i, 0x89: self._l2f, 0x8a: self._l2d}
 
-    def not_implemented(self):
+    def _not_implemented(self):
         return 'not implemented'
 
     def interpret(self, value, operands=None, constants=None):
+        """
+        Takes an input of a hex value that represents a byte long Opcode label for the Java Virtual machine and then
+        executes the corresponding method in this file using the other input fields.
+
+        The operands variable takes an optional array of operands to be used with the executed Opcode.
+
+        The constants variable takes an optional array of constants to be used with the executed Opcode.
+        """
         if operands is not None and constants is not None:
-            return self.table[value](operands, constants)
+            return self._table[value](operands, constants)
         elif operands is not None and constants is None:
-            return self.table[value](operands)
+            return self._table[value](operands)
         else:
-            return self.table[value]()
+            return self._table[value]()
 
-    def iconst_m1(self):
-        self.op_stack.append(-1)
+    def _iconst_m1(self):
+        self._op_stack.append(-1)
 
-    def iconst_0(self):
-        self.op_stack.append(0)
+    def _iconst_0(self):
+        self._op_stack.append(0)
 
-    def iconst_1(self):
-        self.op_stack.append(1)
+    def _iconst_1(self):
+        self._op_stack.append(1)
 
-    def iconst_2(self):
-        self.op_stack.append(2)
+    def _iconst_2(self):
+        self._op_stack.append(2)
 
-    def iconst_3(self):
-        self.op_stack.append(3)
+    def _iconst_3(self):
+        self._op_stack.append(3)
 
-    def iconst_4(self):
-        self.op_stack.append(4)
+    def _iconst_4(self):
+        self._op_stack.append(4)
 
-    def iconst_5(self):
-        self.op_stack.append(5)
+    def _iconst_5(self):
+        self._op_stack.append(5)
 
-    def iadd(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 + value2)
+    def _iadd(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 + value2)
 
-    def iand(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 & value2)
+    def _iand(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 & value2)
 
-    def idiv(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
+    def _idiv(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
         try:
-            self.op_stack.append(value1//value2)
+            self._op_stack.append(value1//value2)
         except ZeroDivisionError:
             return 'Error: Divides by Zero'
 
-    def imul(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 * value2)
+    def _imul(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 * value2)
 
-    def ineg(self):
-        self.op_stack.append(self.op_stack.pop() * -1)
+    def _ineg(self):
+        self._op_stack.append(self._op_stack.pop() * -1)
 
-    def ior(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 | value2)
+    def _ior(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 | value2)
 
-    def irem(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
+    def _irem(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
         try:
-            self.op_stack.append(value1 % value2)
+            self._op_stack.append(value1 % value2)
         except ZeroDivisionError:
             return 'Error: Divides by Zero'
 
-    def ishl(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 << value2)
+    def _ishl(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 << value2)
 
-    def ishr(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 >> value2)
+    def _ishr(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 >> value2)
 
-    def isub(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 - value2)
+    def _isub(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 - value2)
 
-    def iushr(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
+    def _iushr(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
         s = value2 & 0x1f
         if value1 >= 0:
-            self.op_stack.append(value1 >> s)
+            self._op_stack.append(value1 >> s)
         else:
-            self.op_stack.append((value1 + 0x100000000) >> s)
+            self._op_stack.append((value1 + 0x100000000) >> s)
 
-    def ixor(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        self.op_stack.append(value1 ^ value2)
+    def _ixor(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        self._op_stack.append(value1 ^ value2)
 
-    def iload(self, operands):
+    def _iload(self, operands):
         index = operands.pop()
-        self.op_stack.append(self.lva[index])
+        self._op_stack.append(self._lva[index])
 
-    def iload_0(self):
-        self.op_stack.append(self.lva[0])
+    def _iload_0(self):
+        self._op_stack.append(self._lva[0])
 
-    def iload_1(self):
-        self.op_stack.append(self.lva[1])
+    def _iload_1(self):
+        self._op_stack.append(self._lva[1])
 
-    def iload_2(self):
-        self.op_stack.append(self.lva[2])
+    def _iload_2(self):
+        self._op_stack.append(self._lva[2])
 
-    def iload_3(self):
-        self.op_stack.append(self.lva[3])
+    def _iload_3(self):
+        self._op_stack.append(self._lva[3])
 
-    def istore(self, operands):
+    def _istore(self, operands):
         index = operands.pop()
-        if len(self.lva) <= index:
-            self.lva.append(self.op_stack.pop())
+        if len(self._lva) <= index:
+            self._lva.append(self._op_stack.pop())
         else:
-            self.lva[index] = self.op_stack.pop()
+            self._lva[index] = self._op_stack.pop()
 
-    def istore_0(self):
-        if len(self.lva) == 0:
-            self.lva.append(self.op_stack.pop())
+    def _istore_0(self):
+        if len(self._lva) == 0:
+            self._lva.append(self._op_stack.pop())
         else:
-            self.lva[0] = self.op_stack.pop()
+            self._lva[0] = self._op_stack.pop()
 
-    def istore_1(self):
-        if len(self.lva) == 1:
-            self.lva.append(self.op_stack.pop())
+    def _istore_1(self):
+        if len(self._lva) == 1:
+            self._lva.append(self._op_stack.pop())
         else:
-            self.lva[1] = self.op_stack.pop()
+            self._lva[1] = self._op_stack.pop()
 
-    def istore_2(self):
-        if len(self.lva) == 2:
-            self.lva.append(self.op_stack.pop())
+    def _istore_2(self):
+        if len(self._lva) == 2:
+            self._lva.append(self._op_stack.pop())
         else:
-            self.lva[2] = self.op_stack.pop()
+            self._lva[2] = self._op_stack.pop()
 
-    def istore_3(self):
-        if len(self.lva) == 3:
-            self.lva.append(self.op_stack.pop())
+    def _istore_3(self):
+        if len(self._lva) == 3:
+            self._lva.append(self._op_stack.pop())
         else:
-            self.lva[3] = self.op_stack.pop()
+            self._lva[3] = self._op_stack.pop()
 
-    def i2b(self):  # Josh
-        value1 = self.op_stack.pop()
-        self.op_stack.append(int(value1))
+    def _i2b(self):  # Josh
+        value1 = self._op_stack.pop()
+        self._op_stack.append(int(value1))
 
-    def i2c(self):
-        value1 = self.op_stack.pop()
-        self.op_stack.append(chr(value1))
+    def _i2c(self):
+        value1 = self._op_stack.pop()
+        self._op_stack.append(chr(value1))
 
-    def i2d(self):
-        value1 = self.op_stack.pop()
-        self.op_stack.append(float(value1))
+    def _i2d(self):
+        value1 = self._op_stack.pop()
+        self._op_stack.append(float(value1))
 
-    def i2f(self):
-        value1 = self.op_stack.pop()
-        self.op_stack.append(float(value1))
+    def _i2f(self):
+        value1 = self._op_stack.pop()
+        self._op_stack.append(float(value1))
 
-    def i2l(self):
-        value1 = self.op_stack.pop()
-        self.op_stack.append(int(value1))
+    def _i2l(self):
+        value1 = self._op_stack.pop()
+        self._op_stack.append(int(value1))
 
-    def i2s(self):
-        value1 = self.op_stack.pop()
-        self.op_stack.append(int(value1))
+    def _i2s(self):
+        value1 = self._op_stack.pop()
+        self._op_stack.append(int(value1))
 
-    def lload_0(self):
-        frag1 = self.lva[0]
-        frag2 = self.lva[1]
-        self.op_stack.append(frag1)
-        self.op_stack.append(frag2)
+    def _lload_0(self):
+        frag1 = self._lva[0]
+        frag2 = self._lva[1]
+        self._op_stack.append(frag1)
+        self._op_stack.append(frag2)
 
-    def lload_1(self):
-        frag1 = self.lva[1]
-        frag2 = self.lva[2]
-        self.op_stack.append(frag1)
-        self.op_stack.append(frag2)
+    def _lload_1(self):
+        frag1 = self._lva[1]
+        frag2 = self._lva[2]
+        self._op_stack.append(frag1)
+        self._op_stack.append(frag2)
 
-    def lload_2(self):
-        frag1 = self.lva[2]
-        frag2 = self.lva[3]
-        self.op_stack.append(frag1)
-        self.op_stack.append(frag2)
+    def _lload_2(self):
+        frag1 = self._lva[2]
+        frag2 = self._lva[3]
+        self._op_stack.append(frag1)
+        self._op_stack.append(frag2)
 
-    def lload_3(self):
-        frag1 = self.lva[3]
-        frag2 = self.lva[4]
-        self.op_stack.append(frag1)
-        self.op_stack.append(frag2)
+    def _lload_3(self):
+        frag1 = self._lva[3]
+        frag2 = self._lva[4]
+        self._op_stack.append(frag1)
+        self._op_stack.append(frag2)
 
-    def lload(self, operands):
+    def _lload(self, operands):
         index = operands.pop()
-        frag1 = self.lva[index]
-        frag2 = self.lva[index+1]
-        self.op_stack.append(frag1)
-        self.op_stack.append(frag2)
+        frag1 = self._lva[index]
+        frag2 = self._lva[index+1]
+        self._op_stack.append(frag1)
+        self._op_stack.append(frag2)
 
-    def lconst_0(self):
-        self.op_stack.append(0)
-        self.op_stack.append(0)
+    def _lconst_0(self):
+        self._op_stack.append(0)
+        self._op_stack.append(0)
 
-    def lconst_1(self):
-        self.op_stack.append(0)
-        self.op_stack.append(1)
+    def _lconst_1(self):
+        self._op_stack.append(0)
+        self._op_stack.append(1)
 
-    def lstore_0(self):
-        frag2 = self.op_stack.pop()
-        frag1 = self.op_stack.pop()
-        if len(self.lva) == 0:
-            self.lva.append(frag1)
-            self.lva.append(frag2)
+    def _lstore_0(self):
+        frag2 = self._op_stack.pop()
+        frag1 = self._op_stack.pop()
+        if len(self._lva) == 0:
+            self._lva.append(frag1)
+            self._lva.append(frag2)
         else:
-            self.lva[0] = frag1
-            if len(self.lva) == 1:
-                self.lva.append(frag2)
+            self._lva[0] = frag1
+            if len(self._lva) == 1:
+                self._lva.append(frag2)
             else:
-                self.lva[1] = frag2
+                self._lva[1] = frag2
 
-    def lstore_1(self):
-        frag2 = self.op_stack.pop()
-        frag1 = self.op_stack.pop()
-        if len(self.lva) == 1:
-            self.lva.append(frag1)
-            self.lva.append(frag2)
+    def _lstore_1(self):
+        frag2 = self._op_stack.pop()
+        frag1 = self._op_stack.pop()
+        if len(self._lva) == 1:
+            self._lva.append(frag1)
+            self._lva.append(frag2)
         else:
-            self.lva[1] = frag1
-            if len(self.lva) == 2:
-                self.lva.append(frag2)
+            self._lva[1] = frag1
+            if len(self._lva) == 2:
+                self._lva.append(frag2)
             else:
-                self.lva[2] = frag2
+                self._lva[2] = frag2
 
-    def lstore_2(self):
-        frag2 = self.op_stack.pop()
-        frag1 = self.op_stack.pop()
-        if len(self.lva) == 2:
-            self.lva.append(frag1)
-            self.lva.append(frag2)
+    def _lstore_2(self):
+        frag2 = self._op_stack.pop()
+        frag1 = self._op_stack.pop()
+        if len(self._lva) == 2:
+            self._lva.append(frag1)
+            self._lva.append(frag2)
         else:
-            self.lva[2] = frag1
-            if len(self.lva) == 3:
-                self.lva.append(frag2)
+            self._lva[2] = frag1
+            if len(self._lva) == 3:
+                self._lva.append(frag2)
             else:
-                self.lva[3] = frag2
+                self._lva[3] = frag2
 
-    def lstore_3(self):
-        frag2 = self.op_stack.pop()
-        frag1 = self.op_stack.pop()
-        if len(self.lva) == 3:
-            self.lva.append(frag1)
-            self.lva.append(frag2)
+    def _lstore_3(self):
+        frag2 = self._op_stack.pop()
+        frag1 = self._op_stack.pop()
+        if len(self._lva) == 3:
+            self._lva.append(frag1)
+            self._lva.append(frag2)
         else:
-            self.lva[3] = frag1
-            if len(self.lva) == 4:
-                self.lva.append(frag2)
+            self._lva[3] = frag1
+            if len(self._lva) == 4:
+                self._lva.append(frag2)
             else:
-                self.lva[4] = frag2
+                self._lva[4] = frag2
 
-    def lstore(self, operands):
+    def _lstore(self, operands):
         index = operands.pop()
-        frag2 = self.op_stack.pop()
-        frag1 = self.op_stack.pop()
-        if len(self.lva) == index:
-            self.lva.append(frag1)
-            self.lva.append(frag2)
+        frag2 = self._op_stack.pop()
+        frag1 = self._op_stack.pop()
+        if len(self._lva) == index:
+            self._lva.append(frag1)
+            self._lva.append(frag2)
         else:
-            self.lva[index] = frag1
-            if len(self.lva) == index + 1:
-                self.lva.append(frag2)
+            self._lva[index] = frag1
+            if len(self._lva) == index + 1:
+                self._lva.append(frag2)
             else:
-                self.lva[index + 1] = frag2
+                self._lva[index + 1] = frag2
 
-    def ladd(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _ladd(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op + second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def lsub(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _lsub(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op - second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def lmul(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _lmul(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op * second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def ldiv(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _ldiv(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op / second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
 
-    def lrem(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _lrem(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op % second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def lneg(self):
-        val2 = self.op_stack.pop()
-        val1 = self.op_stack.pop()
-        val = self.longcomb(val1, val2)
+    def _lneg(self):
+        val2 = self._op_stack.pop()
+        val1 = self._op_stack.pop()
+        val = self._longcomb(val1, val2)
         answer = val * -1
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
         
-    def lushr(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
+    def _lushr(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
         s = value2 & 0x3f
         if value1 >= 0:
-            self.op_stack.append(value1 >> s)
+            self._op_stack.append(value1 >> s)
         else:
-            self.op_stack.append((value1 + 0x10000000000000000) >> s)
+            self._op_stack.append((value1 + 0x10000000000000000) >> s)
 
-    def land(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _land(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op & second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def lor(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _lor(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op | second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def lxor(self):
-        second_op2 = self.op_stack.pop()
-        second_op1 = self.op_stack.pop()
-        first_op2 = self.op_stack.pop()
-        first_op1 = self.op_stack.pop()
-        first_op = self.longcomb(first_op1, first_op2)
-        second_op = self.longcomb(second_op1, second_op2)
+    def _lxor(self):
+        second_op2 = self._op_stack.pop()
+        second_op1 = self._op_stack.pop()
+        first_op2 = self._op_stack.pop()
+        first_op1 = self._op_stack.pop()
+        first_op = self._longcomb(first_op1, first_op2)
+        second_op = self._longcomb(second_op1, second_op2)
         answer = first_op ^ second_op
-        answer1, answer2 = self.longsplit(answer)
-        self.op_stack.append(answer1)
-        self.op_stack.append(answer2)
+        answer1, answer2 = self._longsplit(answer)
+        self._op_stack.append(answer1)
+        self._op_stack.append(answer2)
 
-    def l2i(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        self.op_stack.append(int(valuea))
+    def _l2i(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        valuea = self._longcomb(value1, value2)
+        self._op_stack.append(int(valuea))
 
-    def l2f(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        self.op_stack.append(float(valuea))
+    def _l2f(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        valuea = self._longcomb(value1, value2)
+        self._op_stack.append(float(valuea))
 
-    def l2d(self):
-        value2 = self.op_stack.pop()
-        value1 = self.op_stack.pop()
-        valuea = self.longcomb(value1, value2)
-        self.op_stack.append(float(valuea))
+    def _l2d(self):
+        value2 = self._op_stack.pop()
+        value1 = self._op_stack.pop()
+        valuea = self._longcomb(value1, value2)
+        self._op_stack.append(float(valuea))
 
-    def get_str_from_cpool(self, index, c_pool):
+    def _get_str_from_cpool(self, index, c_pool):
 
         const_ref = c_pool[index]
 
         if const_ref.tag != 1:
             class_index = const_ref.info[0] + const_ref.info[1] - 1
-            val = self.get_str_from_cpool(class_index, c_pool)
+            val = self._get_str_from_cpool(class_index, c_pool)
 
             if const_ref.tag == 10:
                 val += '.'
@@ -449,93 +457,93 @@ class OpCodes():
 
             if const_ref.info.__len__() > 2:
                 name_type_index = const_ref.info[2] + const_ref.info[3] - 1
-                val += self.get_str_from_cpool(name_type_index, c_pool)
+                val += self._get_str_from_cpool(name_type_index, c_pool)
 
             return val
 
         else:
             return bytes(const_ref.info).decode("utf-8")
 
-    def invokevirtual(self, operands, c_pool):
+    def _invokevirtual(self, operands, c_pool):
         num1 = operands.pop()
         num2 = operands.pop()
-        method = self.get_str_from_cpool(num1 + num2 - 1, c_pool)
+        method = self._get_str_from_cpool(num1 + num2 - 1, c_pool)
         if method == 'java/io/PrintStream.println:(I)V':
-            print(self.op_stack.pop())
+            print(self._op_stack.pop())
         elif method == 'java/io/PrintStream.println:(Ljava/lang/String;)V':
-            print(self.op_stack.pop())
+            print(self._op_stack.pop())
         elif method == 'java/util/Scanner.nextInt:()I':
             data = input("Enter a number: ")
             while re.match(r"[-+]?\d+$", data) is None:
                 print("Invalid input")
                 data = input("Enter a number: ")
             int1 = int(data)
-            self.op_stack.append(int1)
+            self._op_stack.append(int1)
 
-    def getstatic(self, operands, c_pool):
+    def _getstatic(self, operands, c_pool):
         value1 = operands.pop()
         value2 = operands.pop()
-        return self.get_str_from_cpool(value1 + value2 - 1, c_pool)
+        return self._get_str_from_cpool(value1 + value2 - 1, c_pool)
 
-    def ldc(self, operands, c_pool):
+    def _ldc(self, operands, c_pool):
         value = operands.pop()
-        self.op_stack.append(self.get_str_from_cpool(value - 1, c_pool))
+        self._op_stack.append(self._get_str_from_cpool(value - 1, c_pool))
 
-    def longsplit(self, val):    # Splits long in half and returns first and second frag as int32
+    def _longsplit(self, val):    # Splits long in half and returns first and second frag as int32
         val = np.int64(val)
         frag2 = np.int32(val & 0x00000000ffffffff)
         frag1 = np.int32((val >> 32) & 0x00000000ffffffff)
         return frag1, frag2
 
-    def longcomb(self, frag1, frag2):   # Takes two fragments and combines them, returning a 64 bit int
+    def _longcomb(self, frag1, frag2):   # Takes two fragments and combines them, returning a 64 bit int
         frag1 = np.int64((0x00000000ffffffff & frag1) << 32)
         frag2 = np.int64(0x00000000ffffffff & frag2)
         return frag1 + frag2
       
-    def fconst_0(self):
-        self.op_stack.append(np.float32(0.0))
+    def _fconst_0(self):
+        self._op_stack.append(np.float32(0.0))
 
-    def fconst_1(self):
-        self.op_stack.append(np.float32(1.0))
+    def _fconst_1(self):
+        self._op_stack.append(np.float32(1.0))
 
-    def fconst_2(self):
-        self.op_stack.append(np.float32(2.0))
+    def _fconst_2(self):
+        self._op_stack.append(np.float32(2.0))
 
-    def fload(self, operands):
+    def _fload(self, operands):
         index = operands.pop()
-        self.op_stack.append(self.lva[index])
+        self._op_stack.append(self._lva[index])
 
-    def fload_0(self):
-        self.op_stack.append(self.lva[0])
+    def _fload_0(self):
+        self._op_stack.append(self._lva[0])
 
-    def fload_1(self):
-        self.op_stack.append(self.lva[1])
+    def _fload_1(self):
+        self._op_stack.append(self._lva[1])
 
-    def fload_2(self):
-        self.op_stack.append(self.lva[2])
+    def _fload_2(self):
+        self._op_stack.append(self._lva[2])
 
-    def fload_3(self):
-        self.op_stack.append(self.lva[3])   
+    def _fload_3(self):
+        self._op_stack.append(self._lva[3])   
 
-    def f2i(self):
-        value1 = struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0]
-        self.op_stack.append(np.int32(value1))
+    def _f2i(self):
+        value1 = struct.unpack('!f', bytes.fromhex(self._op_stack.pop()))[0]
+        self._op_stack.append(np.int32(value1))
 
-    def f2l(self):
-        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+    def _f2l(self):
+        value1 = np.int64(struct.unpack('!f', bytes.fromhex(self._op_stack.pop()))[0])
         value2 = np.right_shift(value1, 32)
         value3 = np.bitwise_and(value1, 0x00000000FFFFFFFF)
-        self.op_stack.append(np.int32(value2))
-        self.op_stack.append(np.int32(value3))
+        self._op_stack.append(np.int32(value2))
+        self._op_stack.append(np.int32(value3))
 
-    def f2d(self):
-        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self.op_stack.pop()))[0])
+    def _f2d(self):
+        value1 = np.float64(struct.unpack('!f', bytes.fromhex(self._op_stack.pop()))[0])
         hexval = hex(struct.unpack('<Q', struct.pack('<d', value1))[0])
         value2 = hexval[2:10]
         value3 = hexval[10:18]
-        self.op_stack.append(int(value2, 16))
-        self.op_stack.append(int(value3, 16))
+        self._op_stack.append(int(value2, 16))
+        self._op_stack.append(int(value3, 16))
 
-    def ret(self):
+    def _ret(self):
         return ''
       
