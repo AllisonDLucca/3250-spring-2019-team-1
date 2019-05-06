@@ -492,10 +492,9 @@ class OpCodes():
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
         np.seterr(divide=print('Error: Divides by Zero'))
-        #try:
+        if value2 == 0.0:
+            return 'Error: Divides by Zero'
         self.op_stack.append(np.float32(value1 % value2))
-        #except ZeroDivisionError:
-         #   return 'Error: Divides by Zero'
 
     def fneg(self):
         value = np.float32(self.op_stack.pop())
