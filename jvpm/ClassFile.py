@@ -23,7 +23,7 @@ class CodeAttribute():
 
 class ClassFile():
     def __init__(self):
-        with open('C:\\Users\\Josh Brown\\Documents\\3250\\joshDevelop\\jvpm\\Foo.class', 'rb') as binary_file:
+        with open('TestyTesticles.class', 'rb') as binary_file:
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
@@ -154,15 +154,18 @@ class ClassFile():
         while i < len(self.attribute_table):
             while j < len(self.attribute_table[i].code):
                 value = self.attribute_table[i].code[j]
-                if value == 54 or value == 21:
+                if value == 54 or value == 21 or value == 0x17:
                     j += 1
                     ops.interpret(value, [self.attribute_table[i].code[j]])
+                elif value == 0x12:
+                    j += 1
+                    ops.interpret(value, [self.attribute_table[i].code[j]], self.c_pool_table)
                 elif value == 0xb6 or value == 0xb2:
                     j += 2
                     ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
                 else:
                     ops.interpret(value)
-                print("stack: ", ops.op_stack)
+                #print("stack: ", ops.op_stack)
                 #print("array: ", ops.lva)
                 j += 1
             i += 1
