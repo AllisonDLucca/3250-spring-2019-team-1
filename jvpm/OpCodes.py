@@ -1,41 +1,59 @@
-import numpy as np
 import struct
 import re
+import numpy as np
+
 
 class OpCodes():
     def __init__(self):
         self._op_stack = []  # operand stack for the opcodes
         self._lva = []  # local variable array initialized
-        self._table = {0x00: self._not_implemented, 0x02: self._iconst_m1, 0x03: self._iconst_0, 0x04: self._iconst_1,
-                      0x05: self._iconst_2, 0x06: self._iconst_3,
-                      0x07: self._iconst_4, 0x08: self._iconst_5, 0x60: self._iadd, 0x7e: self._iand, 0x6c: self._idiv,
-                      0x68: self._imul, 0x74: self._ineg, 0x80: self._ior,
-                      0x70: self._irem, 0x78: self._ishl, 0x7a: self._ishr, 0x64: self._isub, 0x7c: self._iushr,
-                      0x82: self._ixor, 0x15: self._iload, 0x1a: self._iload_0, 0x1b: self._iload_1,
-                      0x1c: self._iload_2, 0x1d: self._iload_3, 0x36: self._istore, 0x3b: self._istore_0,
-                      0x3c: self._istore_1, 0x3d: self._istore_2, 0x3e: self._istore_3, 0x91: self._i2b, 0x92: self._i2c,
-                      0x87: self._i2d, 0x86: self._i2f,
-                      0x85: self._i2l, 0x93: self._i2s, 0xb6: self._invokevirtual, 0xb2: self._getstatic, 0x12: self._ldc,
-                      0x8b: self._f2i, 0x8c: self._f2l, 0x8d: self._f2d, 0xb1: self._ret, 0xb: self._fconst_0,
-                      0xc: self._fconst_1, 0xd: self._fconst_2, 0x17: self._fload, 0x22: self._fload_0, 0x23: self._fload_1,
-                      0x24: self._fload_2, 0x25: self._fload_3,
-                      0x1e: self._lload_0, 0x1f: self._lload_1, 0x20:self._lload_2, 0x21:self._lload_3, 0x16:self._lload,
-                      0x9: self._lconst_0, 0xa: self._lconst_1, 0x3f: self._lstore_0, 0x40: self._lstore_1,
-                      0x41: self._lstore_2, 0x42: self._lstore_3, 0x37: self._lstore, 0x61: self._ladd, 0x65: self._lsub,
-                      0x69: self._lmul, 0x6d: self._ldiv, 0x71: self._lrem, 0x75: self._lneg, 0x7d: self._lushr,
-                      0x7f: self._land, 0x81: self._lor, 0x83: self._lxor, 0x88: self._l2i, 0x89: self._l2f, 0x8a: self._l2d}
+        self._table = {0x00: self._not_implemented,
+                       0x02: self._iconst_m1, 0x03: self._iconst_0, 0x04: self._iconst_1,
+                       0x05: self._iconst_2, 0x06: self._iconst_3,
+                       0x07: self._iconst_4, 0x08: self._iconst_5,
+                       0x60: self._iadd, 0x7e: self._iand, 0x6c: self._idiv,
+                       0x68: self._imul, 0x74: self._ineg, 0x80: self._ior,
+                       0x70: self._irem, 0x78: self._ishl,
+                       0x7a: self._ishr, 0x64: self._isub, 0x7c: self._iushr,
+                       0x82: self._ixor, 0x15: self._iload,
+                       0x1a: self._iload_0, 0x1b: self._iload_1,
+                       0x1c: self._iload_2, 0x1d: self._iload_3,
+                       0x36: self._istore, 0x3b: self._istore_0,
+                       0x3c: self._istore_1, 0x3d: self._istore_2,
+                       0x3e: self._istore_3, 0x91: self._i2b, 0x92: self._i2c,
+                       0x87: self._i2d, 0x86: self._i2f,
+                       0x85: self._i2l, 0x93: self._i2s,
+                       0xb6: self._invokevirtual, 0xb2: self._getstatic, 0x12: self._ldc,
+                       0x8b: self._f2i, 0x8c: self._f2l,
+                       0x8d: self._f2d, 0xb1: self._ret, 0xb: self._fconst_0,
+                       0xc: self._fconst_1, 0xd: self._fconst_2,
+                       0x17: self._fload, 0x22: self._fload_0, 0x23: self._fload_1,
+                       0x24: self._fload_2, 0x25: self._fload_3,
+                       0x1e: self._lload_0, 0x1f: self._lload_1,
+                       0x20:self._lload_2, 0x21:self._lload_3, 0x16:self._lload,
+                       0x9: self._lconst_0, 0xa: self._lconst_1,
+                       0x3f: self._lstore_0, 0x40: self._lstore_1,
+                       0x41: self._lstore_2, 0x42: self._lstore_3,
+                       0x37: self._lstore, 0x61: self._ladd, 0x65: self._lsub,
+                       0x69: self._lmul, 0x6d: self._ldiv,
+                       0x71: self._lrem, 0x75: self._lneg, 0x7d: self._lushr,
+                       0x7f: self._land, 0x81: self._lor,
+                       0x83: self._lxor, 0x88: self._l2i, 0x89: self._l2f, 0x8a: self._l2d}
 
     def _not_implemented(self):
         return 'not implemented'
 
     def interpret(self, value, operands=None, constants=None):
         """
-        Takes an input of a hex value that represents a byte long Opcode label for the Java Virtual machine and then
+        Takes an input of a hex value that represents a
+        byte long Opcode label for the Java Virtual machine and then
         executes the corresponding method in this file using the other input fields.
 
-        The operands variable takes an optional array of operands to be used with the executed Opcode.
+        The operands variable takes an optional array
+        of operands to be used with the executed Opcode.
 
-        The constants variable takes an optional array of constants to be used with the executed Opcode.
+        The constants variable takes an optional array
+        of constants to be used with the executed Opcode.
         """
         if operands is not None and constants is not None:
             return self._table[value](operands, constants)
@@ -157,7 +175,7 @@ class OpCodes():
             self._lva[index] = self._op_stack.pop()
 
     def _istore_0(self):
-        if len(self._lva) == 0:
+        if self._lva == 0:
             self._lva.append(self._op_stack.pop())
         else:
             self._lva[0] = self._op_stack.pop()
@@ -246,7 +264,7 @@ class OpCodes():
     def _lstore_0(self):
         frag2 = self._op_stack.pop()
         frag1 = self._op_stack.pop()
-        if len(self._lva) == 0:
+        if self._lva == 0:
             self._lva.append(frag1)
             self._lva.append(frag2)
         else:
@@ -378,7 +396,7 @@ class OpCodes():
         answer1, answer2 = self._longsplit(answer)
         self._op_stack.append(answer1)
         self._op_stack.append(answer2)
-        
+
     def _lushr(self):
         value2 = self._op_stack.pop()
         value1 = self._op_stack.pop()
@@ -489,17 +507,19 @@ class OpCodes():
         value = operands.pop()
         self._op_stack.append(self._get_str_from_cpool(value - 1, c_pool))
 
-    def _longsplit(self, val):    # Splits long in half and returns first and second frag as int32
+    # Splits long in half and returns first and second frag as int32
+    def _longsplit(self, val):
         val = np.int64(val)
         frag2 = np.int32(val & 0x00000000ffffffff)
         frag1 = np.int32((val >> 32) & 0x00000000ffffffff)
         return frag1, frag2
 
-    def _longcomb(self, frag1, frag2):   # Takes two fragments and combines them, returning a 64 bit int
+    # Takes two fragments and combines them, returning a 64 bit int
+    def _longcomb(self, frag1, frag2):
         frag1 = np.int64((0x00000000ffffffff & frag1) << 32)
         frag2 = np.int64(0x00000000ffffffff & frag2)
         return frag1 + frag2
-      
+
     def _fconst_0(self):
         self._op_stack.append(np.float32(0.0))
 
@@ -523,7 +543,7 @@ class OpCodes():
         self._op_stack.append(self._lva[2])
 
     def _fload_3(self):
-        self._op_stack.append(self._lva[3])   
+        self._op_stack.append(self._lva[3])
 
     def _f2i(self):
         value1 = struct.unpack('!f', bytes.fromhex(self._op_stack.pop()))[0]
@@ -546,4 +566,3 @@ class OpCodes():
 
     def _ret(self):
         return ''
-      
