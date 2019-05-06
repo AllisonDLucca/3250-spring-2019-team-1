@@ -32,7 +32,7 @@ class ClassFile():
         self.attribute_table = []
         self.parse_class_file()
 
-    def parse_class_file(self):
+    def _parse_class_file(self):
         self.get_magic()
         self.get_minor()
         self.get_major()
@@ -45,22 +45,22 @@ class ClassFile():
         self.get_attribute_count()
         self.create_attribute_table()
 
-    def get_magic(self):
+    def _get_magic(self):
         magic = ""
         for i in range(4):
             magic += format(self.data[i], '02X')
         return magic
 
-    def get_minor(self):
+    def _get_minor(self):
         return self.data[4] + self.data[5]
 
-    def get_major(self):
+    def _get_major(self):
         return self.data[6] + self.data[7]
 
-    def get_constant_pool_count(self):
+    def _get_constant_pool_count(self):
         return self.data[8] + self.data[9]
 
-    def create_c_pool(self):
+    def _create_c_pool(self):
         index_offset = 10
         switch = {
             3: 4,
@@ -95,21 +95,21 @@ class ClassFile():
         self.cpoolsize = index_offset - 10
         return index_offset - 10
 
-    def get_constant_pool_size(self):
+    def _get_constant_pool_size(self):
         if(len(self.c_pool_table)!=self.get_constant_pool_count()-1):
             self.create_c_pool()
         return self.cpoolsize
 
-    def get_flags(self):
+    def _get_flags(self):
         return self.data[10+self.get_constant_pool_size()] + self.data[self.get_constant_pool_size()+11]
 
-    def get_this_class(self):
+    def _get_this_class(self):
         return self.data[self.get_constant_pool_size()+12] + self.data[self.get_constant_pool_size()+13]
 
-    def get_super_class(self):
+    def _get_super_class(self):
         return self.data[self.get_constant_pool_size()+14] + self.data[self.get_constant_pool_size()+15]
 
-    def get_interface_count(self):
+    def _get_interface_count(self):
         return self.data[self.get_constant_pool_size()+16] + self.data[self.get_constant_pool_size()+17]
 
     #def create_interface(self):
@@ -118,20 +118,20 @@ class ClassFile():
     #        itable[i] = self.data[self.get_constant_pool_size() + 18 + i]
     #    self.interface_table = itable
 
-    def get_field_count(self):
+    def _get_field_count(self):
         return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
 
     #def create_field_table(self):
     #    '''dont wanna do'''
     #    return
     
-    def get_field_size(self):
+    def _get_field_size(self):
         return self.get_field_count()*2
 
-    def get_method_count(self):
+    def _get_method_count(self):
         return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
 
-    def create_method_table(self):
+    def _create_method_table(self):
         count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_method_count()):
             mtable = MethodInfo()
@@ -141,11 +141,11 @@ class ClassFile():
             self.method_table.append(mtable)
         return self.method_table
 
-    def get_attribute_count(self):
+    def _get_attribute_count(self):
         count = 28 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         return self.data[count] + self.data[1 + count]
 
-    def create_attribute_table(self):
+    def _create_attribute_table(self):
         count = 30 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_attribute_count()):
             codeAtt = CodeAttribute()
@@ -162,27 +162,31 @@ class ClassFile():
         return self.attribute_table
 
     def run_opcodes(self):
+        """
+
+        :return:
+        """
         ops = OpCodes()
-        i = 0
-        j = 0
-        while i < len(self.attribute_table):
-            while j < len(self.attribute_table[i].code):
-                value = self.attribute_table[i].code[j]
+        table_index = 0
+        code_index = 0
+        while table_index < len(self.attribute_table):
+            while code_index < len(self.attribute_table[table_index].code):
+                value = self.attribute_table[table_index].code[code_index]
                 if value == 54 or value == 21 or value == 0x17:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]])
+                    code_index += 1
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index]])
                 elif value == 0x12:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]], self.c_pool_table)
+                    code_index += 1
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index]], self.c_pool_table)
                 elif value == 0xb6 or value == 0xb2:
-                    j += 2
-                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                    code_index += 2
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index-1], self.attribute_table[table_index].code[code_index]], self.c_pool_table)
                 else:
                     ops.interpret(value)
                 #print("stack: ", ops.op_stack)
                 #print("array: ", ops.lva)
-                j += 1
-            i += 1
+                code_index += 1
+            table_index += 1
         return ops
 
 
