@@ -22,14 +22,28 @@ class CodeAttribute():
         self.code = []
 
 class ClassFile():
-    def __init__(self):
-        with open('TestyTesticles.class', 'rb') as binary_file:
+    def __init__(self, path):
+        with open(path, 'rb') as binary_file:
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
         #self.interface_table = []
         self.method_table = []
         self.attribute_table = []
+        self.parse_class_file()
+
+    def parse_class_file(self):
+        self.get_magic()
+        self.get_minor()
+        self.get_major()
+        self.get_constant_pool_count()
+        self.create_c_pool()
+        self.get_interface_count()
+        self.get_field_count()
+        self.get_method_count()
+        self.create_method_table()
+        self.get_attribute_count()
+        self.create_attribute_table()
 
     def get_magic(self):
         magic = ""
