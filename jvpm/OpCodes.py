@@ -484,18 +484,18 @@ class OpCodes():
     def fdiv(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
-        try:
-            self.op_stack.append(np.float32(value1 / value2))
-        except ZeroDivisionError:
+        if value2 == 0.0:
             return 'Error: Divides by Zero'
+        self.op_stack.append(np.float32(value1 / value2))
 
     def frem(self):
         value2 = np.float32(self.op_stack.pop())
         value1 = np.float32(self.op_stack.pop())
-        try:
-            self.op_stack.append(np.float32(value1 % value2))
-        except ZeroDivisionError:
-            return 'Error: Divides by Zero'
+        np.seterr(divide=print('Error: Divides by Zero'))
+        #try:
+        self.op_stack.append(np.float32(value1 % value2))
+        #except ZeroDivisionError:
+         #   return 'Error: Divides by Zero'
 
     def fneg(self):
         value = np.float32(self.op_stack.pop())

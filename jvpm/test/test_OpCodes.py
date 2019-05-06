@@ -354,8 +354,7 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m.op_stack.pop(), np.float32(1.0))
         m.op_stack.append(np.float32(2.0))
         m.op_stack.append(np.float32(0.0))
-        m.interpret(0x6e)
-        self.assertEqual(m.op_stack.pop(), 'Error: Divides by Zero')
+        self.assertEqual(m.interpret(0x6e), 'Error: Divides by Zero')
 
     def test_frem(self):
         m = OpCodes()
@@ -363,8 +362,8 @@ class TestOpCodes(unittest.TestCase):
         m.op_stack.append(np.float32(2.0))
         m.interpret(0x72)
         self.assertEqual(m.op_stack.pop(), np.float32(1.0))
-        m.op_stack.append(np.float32(0.0))
         m.op_stack.append(np.float32(5.0))
+        m.op_stack.append(np.float32(0.0))
         m.interpret(0x72)
         self.assertEqual(m.op_stack.pop(), 'Error: Divides by Zero')
 
