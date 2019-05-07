@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ab79f93-5724-4bd8-ba91-1e71592e3b90" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jvpm/OpCodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/jvpm/OpCodes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jvpm/test/test_OpCodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/jvpm/test/test_OpCodes.py" afterDir="false" />
     </list>
@@ -17,8 +16,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jvpm/OpCodes.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5550">
-              <caret line="370" column="38" selection-start-line="370" selection-start-column="38" selection-end-line="370" selection-end-column="38" />
+            <state relative-caret-position="451">
+              <caret line="378" column="36" lean-forward="true" selection-start-line="378" selection-start-column="36" selection-end-line="378" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -26,8 +25,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jvpm/test/test_OpCodes.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="479" column="29" selection-start-line="479" selection-start-column="29" selection-end-line="479" selection-end-column="29" />
+            <state relative-caret-position="291">
+              <caret line="476" column="54" lean-forward="true" selection-start-line="476" selection-start-column="54" selection-end-line="476" selection-end-column="54" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -38,13 +37,19 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/unittest/case.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9015">
+            <state relative-caret-position="565">
               <caret line="614" selection-start-line="614" selection-end-line="614" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>8589934592</find>
+      <find>stack</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -53,6 +58,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/jvpm/OpCodes.py" />
+        <option value="$PROJECT_DIR$/jvpm/test/test_OpCodes.py" />
       </list>
     </option>
   </component>
@@ -75,7 +81,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -98,9 +103,11 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -172,28 +179,47 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_jvpm - 2019.04.29 at 15h 17m 50s.xml">
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 40m 47s.xml">
       <configuration name="Unittests for jvpm" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_jvpm - 2019.04.29 at 15h 18m 45s.xml">
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 45m 30s.xml">
       <configuration name="Unittests for jvpm" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_jvpm - 2019.04.29 at 15h 19m 46s.xml">
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 45m 48s.xml">
       <configuration name="Unittests for jvpm" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_jvpm - 2019.04.29 at 15h 31m 14s.xml">
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 45m 51s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 45m 56s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 46m 21s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 47m 28s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 49m 31s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 50m 54s.xml">
+      <configuration name="Unittests for jvpm" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_jvpm - 2019.05.07 at 14h 53m 06s.xml">
       <configuration name="Unittests for jvpm" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24954791" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24954791" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32985386" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32985386" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -208,24 +234,24 @@
     </layout>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/jvpm/OpCodes.py">
+    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/unittest/case.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5550">
-          <caret line="370" column="38" selection-start-line="370" selection-start-column="38" selection-end-line="370" selection-end-column="38" />
+        <state relative-caret-position="565">
+          <caret line="614" selection-start-line="614" selection-end-line="614" />
         </state>
       </provider>
     </entry>
-    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/unittest/case.py">
+    <entry file="file://$PROJECT_DIR$/jvpm/OpCodes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9015">
-          <caret line="614" selection-start-line="614" selection-end-line="614" />
+        <state relative-caret-position="451">
+          <caret line="378" column="36" lean-forward="true" selection-start-line="378" selection-start-column="36" selection-end-line="378" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jvpm/test/test_OpCodes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="479" column="29" selection-start-line="479" selection-start-column="29" selection-end-line="479" selection-end-column="29" />
+        <state relative-caret-position="291">
+          <caret line="476" column="54" lean-forward="true" selection-start-line="476" selection-start-column="54" selection-end-line="476" selection-end-column="54" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>

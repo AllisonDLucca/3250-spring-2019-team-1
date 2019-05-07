@@ -366,15 +366,16 @@ class OpCodes():
         self.op_stack.append(answer2)
 
     def lshl(self):
-        second_op = self.op_stack.pop()
-        first_op = self.op_stack.pop()
-        answer = first_op << second_op
+        operand1 = self.op_stack.pop()
+        val1, val2 = self.longsplit(self.op_stack.pop())
+        answer = self.longcomb(val1, val2) << operand1
         self.op_stack.append(answer)
 
+
     def lshr(self):
-        second_op = self.op_stack.pop()
-        first_op = self.op_stack.pop()
-        answer = first_op >> second_op
+        operand1 = self.op_stack.pop()
+        val1, val2 = self.longsplit(self.op_stack.pop())
+        answer = self.longcomb(val1, val2) >> operand1
         self.op_stack.append(answer)
 
         

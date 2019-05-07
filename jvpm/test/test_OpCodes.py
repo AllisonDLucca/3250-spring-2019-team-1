@@ -464,17 +464,17 @@ class TestOpCodes(unittest.TestCase):
 
     def test_lshl(self):
         m = OpCodes()
-        m.op_stack.append(4)
-        m.op_stack.append(3)
+        m.op_stack.append(4294967295)
+        m.op_stack.append(5)
         m.interpret(0x79)
-        self.assertEqual(m.op_stack.pop(), 32)
+        self.assertEqual(m.op_stack.pop(), 137438953440)
 
     def test_lshr(self):
         m = OpCodes()
-        m.op_stack.append(4)
-        m.op_stack.append(2)
+        m.op_stack.append(4294967295)
+        m.op_stack.append(3)
         m.interpret(0x7d)
-        self.assertEqual(m.op_stack.pop(), 1)
+        self.assertEqual(m.op_stack.pop(), 	536870911)
         
 
     def test_longsplit(self):
