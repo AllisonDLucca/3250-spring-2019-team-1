@@ -27,22 +27,15 @@ class ClassFile():
             self.data = binary_file.read()
         self.c_pool_table = []
         self.cpoolsize = 0
-        #self.interface_table = []
         self.method_table = []
         self.attribute_table = []
         self.parse_class_file()
 
     def parse_class_file(self):
-        self.get_magic()
-        self.get_minor()
-        self.get_major()
-        self.get_constant_pool_count()
+        if self.get_magic() != 'CAFEBABE':
+            raise Exception()
         self.create_c_pool()
-        self.get_interface_count()
-        self.get_field_count()
-        self.get_method_count()
         self.create_method_table()
-        self.get_attribute_count()
         self.create_attribute_table()
 
     def get_magic(self):
@@ -61,6 +54,8 @@ class ClassFile():
         return self.data[8] + self.data[9]
 
     def create_c_pool(self):
+        if self.c_pool_table.__len__() > 0:
+            return self.c_pool_table
         index_offset = 10
         switch = {
             3: 4,
@@ -90,7 +85,6 @@ class ClassFile():
             for x in range (0,bytesNeeded):
                 thing.info.append(self.data[x + index_offset])
             index_offset += bytesNeeded
-            #print("Constant #", i, " tag: ", thing.tag, " value: ", thing.info)
             self.c_pool_table.append(thing)
         self.cpoolsize = index_offset - 10
         return index_offset - 10
@@ -112,18 +106,8 @@ class ClassFile():
     def get_interface_count(self):
         return self.data[self.get_constant_pool_size()+16] + self.data[self.get_constant_pool_size()+17]
 
-    #def create_interface(self):
-    #    itable = [self.get_interface_count()]
-    #    for i in range[0,len(itable)]:
-    #        itable[i] = self.data[self.get_constant_pool_size() + 18 + i]
-    #    self.interface_table = itable
-
     def get_field_count(self):
         return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
-
-    #def create_field_table(self):
-    #    '''dont wanna do'''
-    #    return
     
     def get_field_size(self):
         return self.get_field_count()*2
@@ -132,6 +116,9 @@ class ClassFile():
         return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
 
     def create_method_table(self):
+        if self.method_table.__len__() > 0:
+            return self.method_table
+
         count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_method_count()):
             mtable = MethodInfo()
@@ -146,6 +133,8 @@ class ClassFile():
         return self.data[count] + self.data[1 + count]
 
     def create_attribute_table(self):
+        if self.attribute_table.__len__() > 0:
+            return self.attribute_table
         count = 30 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
         for i in range(0, self.get_attribute_count()):
             codeAtt = CodeAttribute()
