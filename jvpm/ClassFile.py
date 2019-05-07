@@ -163,8 +163,7 @@ class ClassFile():
 
     def run_opcodes(self):
         """
-
-        :return:
+        Runs the opcodes in this file
         """
         ops = OpCodes()
         table_index = 0
