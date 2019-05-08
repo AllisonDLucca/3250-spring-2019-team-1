@@ -29,12 +29,15 @@ class OpCodes():
         return 'not implemented'
 
     def interpret(self, value, operands=None, constants=None):
-        if operands is not None and constants is not None:
-            return self.table[value](operands, constants)
-        elif operands is not None and constants is None:
-            return self.table[value](operands)
-        else:
-            return self.table[value]()
+        try:
+            if operands is not None and constants is not None:
+                return self.table[value](operands, constants)
+            elif operands is not None and constants is None:
+                return self.table[value](operands)
+            else:
+                return self.table[value]()
+        except:
+            print("Opcode ", value, " not implemented, skipping it.")
 
     def iconst_m1(self):
         self.op_stack.append(-1)
