@@ -228,7 +228,7 @@ class ClassFile:
         while table_index < len(self.attribute_table):
             while code_index < len(self.attribute_table[table_index].code):
                 value = self.attribute_table[table_index].code[code_index]
-                if value == 54 or value == 21 or value == 0x17:
+                if value in (54, 21, 23):
                     code_index += 1
                     ops.interpret(
                         value, [self.attribute_table[table_index].code[code_index]]
@@ -240,7 +240,7 @@ class ClassFile:
                         [self.attribute_table[table_index].code[code_index]],
                         self.c_pool_table,
                     )
-                elif value == 0xB6 or value == 0xB2:
+                elif value in (182, 178):
                     code_index += 2
                     ops.interpret(
                         value,
