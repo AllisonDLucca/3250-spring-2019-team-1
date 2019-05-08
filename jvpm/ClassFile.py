@@ -1,18 +1,30 @@
+"""
+Module that reads and runs a java class file
+"""
 from jvpm.OpCodes import OpCodes
 
 class ConstantInfo():
+    """
+    Object containing Constant Info
+    """
     def __init__(self):
         self.tag = 0
         self.info = []
         self.name_index = 0
 
 class MethodInfo():
+    """
+    Object containing Method Info
+    """
     def __init__(self):
         self.access_flags = 0
         self.name_index = 0
         self.descriptor_index = 0
 
 class CodeAttribute():
+    """
+    Object containg Code Attribute
+    """
     def __init__(self):
         self.attribute_name_index = 0
         self.attribute_length = 0
@@ -22,6 +34,9 @@ class CodeAttribute():
         self.code = []
 
 class ClassFile():
+    """
+    Reads the Java class file
+    """
     def __init__(self, path):
         with open(path, 'rb') as binary_file:
             self.data = binary_file.read()
