@@ -658,6 +658,20 @@ class TestOpCodes(unittest.TestCase):
         self.assertEqual(m._op_stack.pop(), -1)
         self.assertEqual(m._op_stack.pop(), -1)
 
+    def test_lshl(self):
+        m = OpCodes()
+        m._op_stack.append(4294967295)
+        m._op_stack.append(5)
+        m.interpret(0x79)
+        self.assertEqual(m._op_stack.pop(), 137438953440)
+
+    def test_lshr(self):
+        m = OpCodes()
+        m._op_stack.append(4294967295)
+        m._op_stack.append(3)
+        m.interpret(0x7d)
+        self.assertEqual(m._op_stack.pop(), 	536870911)
+        
     def test_lushr(self):
         m = OpCodes()
         m._op_stack.append(23)  # Testing for positive logical shift right

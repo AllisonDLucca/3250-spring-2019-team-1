@@ -25,7 +25,8 @@ class OpCodes():
                       0x9: self._lconst_0, 0xa: self._lconst_1, 0x3f: self._lstore_0, 0x40: self._lstore_1,
                       0x41: self._lstore_2, 0x42: self._lstore_3, 0x37: self._lstore, 0x61: self._ladd, 0x65: self._lsub,
                       0x69: self._lmul, 0x6d: self._ldiv, 0x71: self._lrem, 0x75: self._lneg, 0x7d: self._lushr,
-                      0x7f: self._land, 0x81: self._lor, 0x83: self._lxor, 0x88: self._l2i, 0x89: self._l2f, 0x8a: self._l2d}
+                      0x7f: self._land, 0x81: self._lor, 0x83: self._lxor, 0x88: self._l2i, 0x89: self._l2f, 0x8a: self._l2d, 
+                      0x79: self._lshl, 0x7b: self._lshr}
 
     def _not_implemented(self):
         return 'not implemented'
@@ -506,12 +507,23 @@ class OpCodes():
             return 'Error: Divides by Zero'
         self._op_stack.append(np.float32(value1 % value2))
 
+    def _lshl(self):
+        operand1 = self.op_stack.pop()
+        val1, val2 = self.longsplit(self.op_stack.pop())
+        answer = self.longcomb(val1, val2) << operand1
+        self.op_stack.append(answer)
+
+    def _lshr(self):
+        operand1 = self.op_stack.pop()
+        val1, val2 = self.longsplit(self.op_stack.pop())
+        answer = self.longcomb(val1, val2) >> operand1
+        self.op_stack.append(answer)
+
     def _fneg(self):
         value = np.float32(self._op_stack.pop())
         self._op_stack.append(np.float32(- value))
 
     def _get_str_from_cpool(self, index, c_pool):
-
         const_ref = c_pool[index]
 
         if const_ref.tag != 1:
