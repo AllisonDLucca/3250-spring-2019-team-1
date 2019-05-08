@@ -37,12 +37,15 @@ class OpCodes():
 
         The constants variable takes an optional array of constants to be used with the executed Opcode.
         """
-        if operands is not None and constants is not None:
-            return self._table[value](operands, constants)
-        elif operands is not None and constants is None:
-            return self._table[value](operands)
-        else:
-            return self._table[value]()
+        try:
+            if operands is not None and constants is not None:
+                return self._table[value](operands, constants)
+            elif operands is not None and constants is None:
+                return self._table[value](operands)
+            else:
+                return self._table[value]()
+        except:
+            print("Opcode ", value, " not implemented, skipping it.")
 
     def _iconst_m1(self):
         self._op_stack.append(-1)
