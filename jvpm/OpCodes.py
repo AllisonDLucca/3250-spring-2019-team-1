@@ -1,5 +1,6 @@
 import numpy as np
 import struct
+import re
 
 class OpCodes():
     def __init__(self):
@@ -11,9 +12,9 @@ class OpCodes():
                       0x80: self._ior, 0x70: self._irem, 0x78: self._ishl, 0x7a: self._ishr, 0x64: self._isub,
                       0x7c: self._iushr, 0x82: self._ixor, 0x15: self._iload, 0x1a: self._iload_0, 0x1b: self._iload_1,
                       0x1c: self._iload_2, 0x1d: self._iload_3, 0x36: self._istore, 0x3b: self._istore_0,
-                      0x38: self.fstore, 0x43: self.fstore_0, 0x44: self.fstore_1, 0x45: self.fstore_2,
-                      0x46: self.fstore_3, 0x62: self.fadd, 0x66: self.fsub, 0x6a: self.fmul,
-                      0x6e: self.fdiv, 0x72: self.frem, 0x76: self.fneg,
+                      0x38: self._fstore, 0x43: self._fstore_0, 0x44: self._fstore_1, 0x45: self._fstore_2,
+                      0x46: self._fstore_3, 0x62: self._fadd, 0x66: self._fsub, 0x6a: self._fmul,
+                      0x6e: self._fdiv, 0x72: self._frem, 0x76: self._fneg,
                       0x3c: self._istore_1, 0x3d: self._istore_2, 0x3e: self._istore_3, 0x91: self._i2b, 0x92: self._i2c,
                       0x87: self._i2d, 0x86: self._i2f,
                       0x85: self._i2l, 0x93: self._i2s, 0xb6: self._invokevirtual, 0xb2: self._getstatic, 0x12: self._ldc,
@@ -361,7 +362,6 @@ class OpCodes():
         self._op_stack.append(answer1)
         self._op_stack.append(answer2)
 
-
     def _lrem(self):
         second_op2 = self._op_stack.pop()
         second_op1 = self._op_stack.pop()
@@ -448,68 +448,68 @@ class OpCodes():
 
     def _fstore(self, operands):
         index = operands.pop()
-        if len(self.lva) <= index:
-            self.lva.append(np.float32(self.op_stack.pop()))
+        if len(self._lva) <= index:
+            self._lva.append(np.float32(self._op_stack.pop()))
         else:
-            self.lva[index] = np.float32(self.op_stack.pop())
+            self._lva[index] = np.float32(self._op_stack.pop())
 
     def _fstore_0(self):
-        if len(self.lva) == 0.0:
-            self.lva.append(np.float32(self.op_stack.pop()))
+        if len(self._lva) == 0.0:
+            self._lva.append(np.float32(self._op_stack.pop()))
         else:
-            self.lva[0] = np.float32(self.op_stack.pop())
+            self._lva[0] = np.float32(self._op_stack.pop())
 
     def _fstore_1(self):
-        if len(self.lva) == 1.0:
-            self.lva.append(np.float32(self.op_stack.pop()))
+        if len(self._lva) == 1.0:
+            self._lva.append(np.float32(self._op_stack.pop()))
         else:
-            self.lva[1] = np.float32(self.op_stack.pop())
+            self._lva[1] = np.float32(self._op_stack.pop())
 
     def _fstore_2(self):
-        if len(self.lva) == 2.0:
-            self.lva.append(np.float32(self.op_stack.pop()))
+        if len(self._lva) == 2.0:
+            self._lva.append(np.float32(self._op_stack.pop()))
         else:
-            self.lva[2] = np.float32(self.op_stack.pop())
+            self._lva[2] = np.float32(self._op_stack.pop())
 
     def _fstore_3(self):
-        if len(self.lva) == 3.0:
-            self.lva.append(np.float32(self.op_stack.pop()))
+        if len(self._lva) == 3.0:
+            self._lva.append(np.float32(self._op_stack.pop()))
         else:
-            self.lva[3] = np.float32(self.op_stack.pop())
+            self._lva[3] = np.float32(self._op_stack.pop())
 
     def _fadd(self):
-        value2 = np.float32(self.op_stack.pop())
-        value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1 + value2))
+        value2 = np.float32(self._op_stack.pop())
+        value1 = np.float32(self._op_stack.pop())
+        self._op_stack.append(np.float32(value1 + value2))
 
     def _fsub(self):
-        value2 = np.float32(self.op_stack.pop())
-        value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1 - value2))
+        value2 = np.float32(self._op_stack.pop())
+        value1 = np.float32(self._op_stack.pop())
+        self._op_stack.append(np.float32(value1 - value2))
 
     def _fmul(self):
-        value2 = np.float32(self.op_stack.pop())
-        value1 = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(value1 * value2))
+        value2 = np.float32(self._op_stack.pop())
+        value1 = np.float32(self._op_stack.pop())
+        self._op_stack.append(np.float32(value1 * value2))
 
     def _fdiv(self):
-        value2 = np.float32(self.op_stack.pop())
-        value1 = np.float32(self.op_stack.pop())
+        value2 = np.float32(self._op_stack.pop())
+        value1 = np.float32(self._op_stack.pop())
         if value2 == 0.0:
             return 'Error: Divides by Zero'
-        self.op_stack.append(np.float32(value1 / value2))
+        self._op_stack.append(np.float32(value1 / value2))
 
     def _frem(self):
-        value2 = np.float32(self.op_stack.pop())
-        value1 = np.float32(self.op_stack.pop())
+        value2 = np.float32(self._op_stack.pop())
+        value1 = np.float32(self._op_stack.pop())
         np.seterr(divide=print('Error: Divides by Zero'))
         if value2 == 0.0:
             return 'Error: Divides by Zero'
-        self.op_stack.append(np.float32(value1 % value2))
+        self._op_stack.append(np.float32(value1 % value2))
 
     def _fneg(self):
-        value = np.float32(self.op_stack.pop())
-        self.op_stack.append(np.float32(- value))
+        value = np.float32(self._op_stack.pop())
+        self._op_stack.append(np.float32(- value))
 
     def _get_str_from_cpool(self, index, c_pool):
 
