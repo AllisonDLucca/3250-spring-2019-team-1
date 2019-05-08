@@ -508,16 +508,16 @@ class OpCodes():
         self._op_stack.append(np.float32(value1 % value2))
 
     def _lshl(self):
-        operand1 = self.op_stack.pop()
-        val1, val2 = self.longsplit(self.op_stack.pop())
-        answer = self.longcomb(val1, val2) << operand1
-        self.op_stack.append(answer)
+        operand1 = self._op_stack.pop()
+        val1, val2 = self._longsplit(self._op_stack.pop())
+        answer = self._longcomb(val1, val2) << operand1
+        self._op_stack.append(answer)
 
     def _lshr(self):
-        operand1 = self.op_stack.pop()
-        val1, val2 = self.longsplit(self.op_stack.pop())
-        answer = self.longcomb(val1, val2) >> operand1
-        self.op_stack.append(answer)
+        operand1 = self._op_stack.pop()
+        val1, val2 = self._longsplit(self._op_stack.pop())
+        answer = self._longcomb(val1, val2) >> operand1
+        self._op_stack.append(answer)
 
     def _fneg(self):
         value = np.float32(self._op_stack.pop())
