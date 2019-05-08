@@ -669,7 +669,7 @@ class TestOpCodes(unittest.TestCase):
         m = OpCodes()
         m._op_stack.append(4294967295)
         m._op_stack.append(3)
-        m.interpret(0x7d)
+        m.interpret(0x7b)
         self.assertEqual(m._op_stack.pop(), 	536870911)
         
     def test_lushr(self):
