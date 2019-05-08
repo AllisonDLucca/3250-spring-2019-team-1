@@ -29,33 +29,34 @@ class ClassFile():
         self.cpoolsize = 0
         self.method_table = []
         self.attribute_table = []
-        self.parse_class_file()
+        self._parse_class_file()
 
-    def parse_class_file(self):
-        if self.get_magic() != 'CAFEBABE':
+    def _parse_class_file(self):
+        if self._get_magic() != 'CAFEBABE':
             raise Exception()
-        self.create_c_pool()
-        self.create_method_table()
-        self.create_attribute_table()
+        self._create_c_pool()
+        self._create_method_table()
+        self._create_attribute_table()
 
-    def get_magic(self):
+    def _get_magic(self):
         magic = ""
         for i in range(4):
             magic += format(self.data[i], '02X')
         return magic
 
-    def get_minor(self):
+    def _get_minor(self):
         return self.data[4] + self.data[5]
 
-    def get_major(self):
+    def _get_major(self):
         return self.data[6] + self.data[7]
 
-    def get_constant_pool_count(self):
+    def _get_constant_pool_count(self):
         return self.data[8] + self.data[9]
 
-    def create_c_pool(self):
+    def _create_c_pool(self):
         if self.c_pool_table.__len__() > 0:
             return self.c_pool_table
+
         index_offset = 10
         switch = {
             3: 4,
@@ -72,7 +73,7 @@ class ClassFile():
             16: 2,
             18: 4
         }
-        max = int(self.get_constant_pool_count()) - 1
+        max = int(self._get_constant_pool_count()) - 1
         for i in range (0,max):
             thing = ConstantInfo()
             thing.tag = self.data[index_offset]
@@ -89,38 +90,38 @@ class ClassFile():
         self.cpoolsize = index_offset - 10
         return index_offset - 10
 
-    def get_constant_pool_size(self):
-        if(len(self.c_pool_table)!=self.get_constant_pool_count()-1):
-            self.create_c_pool()
+    def _get_constant_pool_size(self):
+        if(len(self.c_pool_table)!=self._get_constant_pool_count()-1):
+            self._create_c_pool()
         return self.cpoolsize
 
-    def get_flags(self):
-        return self.data[10+self.get_constant_pool_size()] + self.data[self.get_constant_pool_size()+11]
+    def _get_flags(self):
+        return self.data[10+self._get_constant_pool_size()] + self.data[self._get_constant_pool_size()+11]
 
-    def get_this_class(self):
-        return self.data[self.get_constant_pool_size()+12] + self.data[self.get_constant_pool_size()+13]
+    def _get_this_class(self):
+        return self.data[self._get_constant_pool_size()+12] + self.data[self._get_constant_pool_size()+13]
 
-    def get_super_class(self):
-        return self.data[self.get_constant_pool_size()+14] + self.data[self.get_constant_pool_size()+15]
+    def _get_super_class(self):
+        return self.data[self._get_constant_pool_size()+14] + self.data[self._get_constant_pool_size()+15]
 
-    def get_interface_count(self):
-        return self.data[self.get_constant_pool_size()+16] + self.data[self.get_constant_pool_size()+17]
+    def _get_interface_count(self):
+        return self.data[self._get_constant_pool_size()+16] + self.data[self._get_constant_pool_size()+17]
 
-    def get_field_count(self):
-        return self.data[18+self.get_constant_pool_size()+self.get_interface_count()] + self.data[19+self.get_constant_pool_size()+self.get_interface_count()]
+    def _get_field_count(self):
+        return self.data[18+self._get_constant_pool_size()+self._get_interface_count()] + self.data[19+self._get_constant_pool_size()+self._get_interface_count()]
     
-    def get_field_size(self):
-        return self.get_field_count()*2
+    def _get_field_size(self):
+        return self._get_field_count()*2
 
-    def get_method_count(self):
-        return self.data[20+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()] + self.data[21+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()]
+    def _get_method_count(self):
+        return self.data[20+self._get_constant_pool_size() + self._get_interface_count() + self._get_field_size()] + self.data[21+self._get_constant_pool_size() + self._get_interface_count() + self._get_field_size()]
 
-    def create_method_table(self):
+    def _create_method_table(self):
         if self.method_table.__len__() > 0:
             return self.method_table
 
-        count = 22+self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
-        for i in range(0, self.get_method_count()):
+        count = 22+self._get_constant_pool_size() + self._get_interface_count() + self._get_field_size()
+        for i in range(0, self._get_method_count()):
             mtable = MethodInfo()
             mtable.access_flags = self.data[count] + self.data[1+count]
             mtable.name_index = self.data[2+count] + self.data[3 + count]
@@ -128,15 +129,16 @@ class ClassFile():
             self.method_table.append(mtable)
         return self.method_table
 
-    def get_attribute_count(self):
-        count = 28 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
+    def _get_attribute_count(self):
+        count = 28 + self._get_constant_pool_size() + self._get_interface_count() + self._get_field_size()
         return self.data[count] + self.data[1 + count]
 
-    def create_attribute_table(self):
+    def _create_attribute_table(self):
         if self.attribute_table.__len__() > 0:
             return self.attribute_table
-        count = 30 + self.get_constant_pool_size() + self.get_interface_count() + self.get_field_size()
-        for i in range(0, self.get_attribute_count()):
+
+        count = 30 + self._get_constant_pool_size() + self._get_interface_count() + self._get_field_size()
+        for i in range(0, self._get_attribute_count()):
             codeAtt = CodeAttribute()
             codeAtt.attribute_name_index = self.data[count] + self.data[1 + count]
             codeAtt.attribute_length = self.data[2 + count] + self.data[3 + count] + self.data[4 + count] + self.data[5 + count]
@@ -151,27 +153,28 @@ class ClassFile():
         return self.attribute_table
 
     def run_opcodes(self):
+        """
+        Runs the opcodes in this file
+        """
         ops = OpCodes()
-        i = 0
-        j = 0
-        while i < len(self.attribute_table):
-            while j < len(self.attribute_table[i].code):
-                value = self.attribute_table[i].code[j]
+        table_index = 0
+        code_index = 0
+        while table_index < len(self.attribute_table):
+            while code_index < len(self.attribute_table[table_index].code):
+                value = self.attribute_table[table_index].code[code_index]
                 if value == 54 or value == 21 or value == 0x17:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]])
+                    code_index += 1
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index]])
                 elif value == 0x12:
-                    j += 1
-                    ops.interpret(value, [self.attribute_table[i].code[j]], self.c_pool_table)
+                    code_index += 1
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index]], self.c_pool_table)
                 elif value == 0xb6 or value == 0xb2:
-                    j += 2
-                    ops.interpret(value, [self.attribute_table[i].code[j-1], self.attribute_table[i].code[j]], self.c_pool_table)
+                    code_index += 2
+                    ops.interpret(value, [self.attribute_table[table_index].code[code_index-1], self.attribute_table[table_index].code[code_index]], self.c_pool_table)
                 else:
                     ops.interpret(value)
-                #print("stack: ", ops.op_stack)
-                #print("array: ", ops.lva)
-                j += 1
-            i += 1
+                code_index += 1
+            table_index += 1
         return ops
 
 

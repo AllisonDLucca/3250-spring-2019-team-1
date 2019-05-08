@@ -13,69 +13,69 @@ class TestClassFile(unittest.TestCase):
             self.cf = ClassFile("")
 
     def test_magic(self):
-        self.assertEqual(self.cf.get_magic(), 'CAFEBABE')
+        self.assertEqual(self.cf._get_magic(), 'CAFEBABE')
 
     def test_minor(self):
-        self.assertEqual(self.cf.get_minor(), 3)
+        self.assertEqual(self.cf._get_minor(), 3)
 
     def test_major(self):
-        self.assertEqual(self.cf.get_major(), 45)
+        self.assertEqual(self.cf._get_major(), 45)
 
     def test_constant_pool_count(self):
-        self.assertEqual(self.cf.get_constant_pool_count(), 10)
+        self.assertEqual(self.cf._get_constant_pool_count(), 10)
 
     def test_create_c_pool(self):
-        self.cf.create_c_pool()
+        self.cf._create_c_pool()
         self.assertEqual(self.cf.c_pool_table.__len__(), 9)
         self.assertEqual(type(self.cf.c_pool_table[0]), type(ConstantInfo()))
 
     def test_get_constant_pool_size(self):
-        self.assertEqual(self.cf.get_constant_pool_size(), 93)
+        self.assertEqual(self.cf._get_constant_pool_size(), 93)
 
     def test_get_flags(self):
-        self.assertEqual(self.cf.get_flags(), 33)
+        self.assertEqual(self.cf._get_flags(), 33)
 
     def test_get_this_class(self):
-        self.assertEqual(self.cf.get_this_class(), 6)
+        self.assertEqual(self.cf._get_this_class(), 6)
 
     def test_get_super_class(self):
-        self.assertEqual(self.cf.get_super_class(), 8)
+        self.assertEqual(self.cf._get_super_class(), 8)
 
     def test_get_interface_count(self):
-        self.assertEqual(self.cf.get_interface_count(), 0)
+        self.assertEqual(self.cf._get_interface_count(), 0)
 
     def test_get_field_count(self):
-        self.assertEqual(self.cf.get_field_count(), 0)
+        self.assertEqual(self.cf._get_field_count(), 0)
 
     def test_get_field_size(self):
-        self.assertEqual(self.cf.get_field_size(), 0)
+        self.assertEqual(self.cf._get_field_size(), 0)
 
     def test_get_method_count(self):
-        self.assertEqual(self.cf.get_method_count(), 1)
+        self.assertEqual(self.cf._get_method_count(), 1)
 
     def test_get_field_size(self):
-        self.assertEqual(self.cf.get_field_size(), 0)
+        self.assertEqual(self.cf._get_field_size(), 0)
 
     def test_create_method_table(self):
-        methods = self.cf.create_method_table()
+        methods = self.cf._create_method_table()
         self.assertEqual(methods.__len__(), 1)
         self.assertEqual(type(methods[0]), type(MethodInfo()))
 
     def test_get_attribute_count(self):
-        self.assertEqual(self.cf.get_attribute_count(), 1)
+        self.assertEqual(self.cf._get_attribute_count(), 1)
 
     def test_create_attribute_table(self):
-        attributes = self.cf.create_attribute_table()
+        attributes = self.cf._create_attribute_table()
         self.assertEqual(attributes.__len__(), 1)
         self.assertEqual(type(attributes[0]), type(CodeAttribute()))
 
     def test_run_opcodes(self):
-        self.cf.create_attribute_table()
+        self.cf._create_attribute_table()
         ops = self.cf.run_opcodes()
         self.assertEqual(ops.op_stack, [3, 'java/lang/Object'])
 
     def test_parse_class_file(self):
-        self.cf.parse_class_file()
+        self.cf._parse_class_file()
 
         self.assertEqual(self.cf.c_pool_table.__len__(), 9)
         self.assertEqual(type(self.cf.c_pool_table[0]), type(ConstantInfo()))
