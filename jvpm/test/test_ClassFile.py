@@ -72,7 +72,7 @@ class TestClassFile(unittest.TestCase):
     def test_run_opcodes(self):
         self.cf._create_attribute_table()
         ops = self.cf.run_opcodes()
-        self.assertEqual(ops.op_stack, [3, 'java/lang/Object'])
+        self.assertEqual(ops._op_stack, [3, 'java/lang/Object'])
 
     def test_parse_class_file(self):
         self.cf._parse_class_file()
