@@ -592,7 +592,7 @@ class OpCodes():
         self._op_stack.append(self._lva[2])
 
     def _fload_3(self):
-        self.op_stack.append(self.lva[3])   
+        self._op_stack.append(self._lva[3])
 
     def _f2i(self):
         value1 = struct.unpack('!f', bytes.fromhex(self._op_stack.pop()))[0]

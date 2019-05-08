@@ -354,16 +354,15 @@ class TestOpCodes(unittest.TestCase):
         m._op_stack.append(np.float32(0.0))
         self.assertEqual(m.interpret(0x6e), 'Error: Divides by Zero')
 
-    # def test_frem(self):
-    #     m = OpCodes()
-    #     m._op_stack.append(np.float32(3.0))
-    #     m._op_stack.append(np.float32(2.0))
-    #     m.interpret(0x72)
-    #     self.assertEqual(m._op_stack.pop(), np.float32(1.0))
-    #     m._op_stack.append(np.float32(5.0))
-    #     m._op_stack.append(np.float32(0.0))
-    #     m.interpret(0x72)
-    #     self.assertEqual(m._op_stack.pop(), 'Error: Divides by Zero')
+    def test_frem(self):
+        m = OpCodes()
+        m._op_stack.append(np.float32(3.0))
+        m._op_stack.append(np.float32(2.0))
+        m.interpret(0x72)
+        self.assertEqual(m._op_stack.pop(), np.float32(1.0))
+        m._op_stack.append(np.float32(5.0))
+        m._op_stack.append(np.float32(0.0))
+        self.assertEqual(m.interpret(0x72), 'Error: Divides by Zero')
 
     def test_fneg(self):
         m = OpCodes()
@@ -835,14 +834,14 @@ class TestOpCodes(unittest.TestCase):
         m.interpret(0x24)
         self.assertEqual(m._op_stack.pop(), np.float32(2.0))
 
-    # def test_fload_3(self):
-    #     m = OpCodes()
-    #     m._lva.append(0.0)
-    #     m._lva.append(1.0)
-    #     m._lva.append(2.0)
-    #     m._lva.append(3.0)
-    #     m.interpret(0x25)
-    #     self.assertEqual(m._op_stack.pop(), np.float32(3.0))
+    def test_fload_3(self):
+        m = OpCodes()
+        m._lva.append(0.0)
+        m._lva.append(1.0)
+        m._lva.append(2.0)
+        m._lva.append(3.0)
+        m.interpret(0x25)
+        self.assertEqual(m._op_stack.pop(), np.float32(3.0))
 
     def test_f2i(self):
         m = OpCodes()
