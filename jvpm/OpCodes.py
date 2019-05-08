@@ -502,7 +502,6 @@ class OpCodes():
     def _frem(self):
         value2 = np.float32(self._op_stack.pop())
         value1 = np.float32(self._op_stack.pop())
-        np.seterr(divide=print('Error: Divides by Zero'))
         if value2 == 0.0:
             return 'Error: Divides by Zero'
         self._op_stack.append(np.float32(value1 % value2))
